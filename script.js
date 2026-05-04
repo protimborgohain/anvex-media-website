@@ -48,23 +48,27 @@ function runCounters() {
     });
 }
 
-// === Custom Package Modal Logic ===
-const modal = document.getElementById("customPackageModal");
+// === Modals Logic ===
+const packageModal = document.getElementById("customPackageModal");
+const consultationModal = document.getElementById("consultationModal");
 const checkboxes = document.querySelectorAll('.service-checkbox');
 const priceDisplay = document.getElementById('calculatedPrice');
 
-function openModal() {
-    modal.style.display = "block";
-}
+// Open/Close Custom Package Modal
+function openModal() { packageModal.style.display = "block"; }
+function closeModal() { packageModal.style.display = "none"; }
 
-function closeModal() {
-    modal.style.display = "none";
-}
+// Open/Close Consultation Modal
+function openConsultationModal() { consultationModal.style.display = "block"; }
+function closeConsultationModal() { consultationModal.style.display = "none"; }
 
-// Close modal if user clicks outside of the content box
+// Close modals if user clicks outside of the content box
 window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
+    if (event.target == packageModal) {
+        packageModal.style.display = "none";
+    }
+    if (event.target == consultationModal) {
+        consultationModal.style.display = "none";
     }
 }
 
@@ -76,11 +80,37 @@ function calculateTotal() {
             total += parseInt(checkbox.value);
         }
     });
-    // Format number with commas
     priceDisplay.innerText = total.toLocaleString('en-IN');
 }
 
-// Add event listeners to all checkboxes
 checkboxes.forEach(checkbox => {
     checkbox.addEventListener('change', calculateTotal);
 });
+
+
+// === WhatsApp Form Submission Logic ===
+function sendToWhatsApp(event) {
+    event.preventDefault(); // Prevent the page from reloading
+
+    // Get input values
+    const name = document.getElementById('c_name').value;
+    const business = document.getElementById('c_business').value;
+    const category = document.getElementById('c_category').value;
+    const location = document.getElementById('c_location').value;
+    const time = document.getElementById('c_time').value;
+
+    const phoneNumber = "918011595012";
+
+    // Format the message for WhatsApp
+    const message = `*New Consultation Request*%0A%0A*Name:* ${name}%0A*Business Name:* ${business}%0A*Category:* ${category}%0A*Location:* ${location}%0A*Preferred Time:* ${time}`;
+
+    // Create WhatsApp URL
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+
+    // Open WhatsApp in a new tab
+    window.open(whatsappUrl, '_blank');
+
+    // Close the modal and reset the form
+    closeConsultationModal();
+    document.getElementById('consultationForm').reset();
+}
