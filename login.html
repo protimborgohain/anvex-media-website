@@ -7,12 +7,80 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Compact Form Overrides */
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px; /* Prevents touching the top/bottom of the screen */
+        }
+        
+        .compact-card {
+            width: 100%;
+            max-width: 400px; /* Narrower, more organized width */
+            padding: 2rem !important; /* Tighter inner padding */
+            border-radius: 20px;
+        }
+
+        .compact-card img {
+            height: 45px; /* Scaled down logo */
+            margin-bottom: 1rem;
+        }
+
+        .compact-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .compact-card p {
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        .compact-input-group {
+            margin-bottom: 1rem; /* Tighter gap between fields */
+            text-align: left;
+        }
+
+        .compact-input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .compact-input-group input {
+            width: 100%;
+            padding: 10px 15px; /* Slimmer inputs */
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px; /* Less rounded for a cleaner, professional look */
+            color: white;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .compact-input-group input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.15);
+        }
+
+        .btn-compact {
+            padding: 12px 24px;
+            font-size: 0.9rem;
+            border-radius: 8px;
+        }
+
         /* Fade-in animation for smooth form switching */
         .fade-switch {
-            animation: fadeIn 0.4s ease-in-out;
+            animation: fadeIn 0.3s ease-in-out;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(5px); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
@@ -26,63 +94,63 @@
     </div>
 
     <!-- Back to home button -->
-    <a href="index.html" style="position: absolute; top: 30px; left: 30px; color: white; text-decoration: none; font-weight: bold; z-index: 100;">
+    <a href="index.html" style="position: absolute; top: 30px; left: 30px; color: white; text-decoration: none; font-weight: bold; z-index: 100; font-size: 0.9rem;">
         <i class="fas fa-arrow-left"></i> Back to Home
     </a>
 
     <div class="login-wrapper fade-up visible">
-        <div class="glass login-card" style="padding: 2.5rem 3rem;">
+        <div class="glass compact-card">
             <img src="https://lh3.googleusercontent.com/d/17XCKA0821hxjZghFPT4FEVmcvagMDqrn" alt="Anvex Media Logo">
             
             <!-- ================= LOGIN SECTION ================= -->
             <div id="login-section" class="fade-switch">
-                <h2 style="margin-bottom: 5px;">Welcome Back</h2>
-                <p style="margin-bottom: 30px; font-size: 0.9rem;">Sign in to access your client dashboard.</p>
+                <h2>Welcome Back</h2>
+                <p>Sign in to access your client dashboard.</p>
 
                 <form action="#">
-                    <div class="input-group">
+                    <div class="compact-input-group">
                         <label for="login-email">Email Address</label>
-                        <input type="email" id="login-email" placeholder="Enter your email" required>
+                        <input type="email" id="login-email" placeholder="hello@yourbusiness.com" required>
                     </div>
-                    <div class="input-group">
+                    <div class="compact-input-group">
                         <label for="login-password">Password</label>
                         <input type="password" id="login-password" placeholder="Enter your password" required>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Login Securely</button>
+                    <button type="submit" class="btn btn-primary btn-compact" style="width: 100%; margin-top: 5px;">Login Securely</button>
                 </form>
 
-                <div style="margin-top: 25px;">
-                    <p style="margin: 0; font-size: 0.9rem;">Don't have an account? <span onclick="toggleForms()" style="color: var(--accent-blue); text-decoration: none; cursor: pointer; font-weight: 600;">Sign Up</span></p>
+                <div style="margin-top: 20px;">
+                    <p style="margin: 0; font-size: 0.85rem;">Don't have an account? <span onclick="toggleForms()" style="color: var(--accent-blue); text-decoration: none; cursor: pointer; font-weight: 600;">Sign Up</span></p>
                 </div>
             </div>
 
             <!-- ================= SIGN UP SECTION (Initially Hidden) ================= -->
             <div id="signup-section" class="fade-switch" style="display: none;">
-                <h2 style="margin-bottom: 5px;">Create Account</h2>
-                <p style="margin-bottom: 25px; font-size: 0.9rem;">Join us and start dominating your local market.</p>
+                <h2>Create Account</h2>
+                <p>Join us and start dominating your local market.</p>
 
                 <form action="#">
-                    <div class="input-group">
+                    <div class="compact-input-group">
                         <label for="reg-name">Full Name</label>
                         <input type="text" id="reg-name" placeholder="John Doe" required>
                     </div>
-                    <div class="input-group">
+                    <div class="compact-input-group">
                         <label for="reg-business">Business Name</label>
                         <input type="text" id="reg-business" placeholder="e.g. Elite Motors" required>
                     </div>
-                    <div class="input-group">
+                    <div class="compact-input-group">
                         <label for="reg-email">Email Address</label>
                         <input type="email" id="reg-email" placeholder="hello@yourbusiness.com" required>
                     </div>
-                    <div class="input-group">
+                    <div class="compact-input-group">
                         <label for="reg-password">Password</label>
                         <input type="password" id="reg-password" placeholder="Create a strong password" required>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Create Account</button>
+                    <button type="submit" class="btn btn-primary btn-compact" style="width: 100%; margin-top: 5px;">Create Account</button>
                 </form>
 
-                <div style="margin-top: 25px;">
-                    <p style="margin: 0; font-size: 0.9rem;">Already have an account? <span onclick="toggleForms()" style="color: var(--accent-blue); text-decoration: none; cursor: pointer; font-weight: 600;">Log In</span></p>
+                <div style="margin-top: 20px;">
+                    <p style="margin: 0; font-size: 0.85rem;">Already have an account? <span onclick="toggleForms()" style="color: var(--accent-blue); text-decoration: none; cursor: pointer; font-weight: 600;">Log In</span></p>
                 </div>
             </div>
 
