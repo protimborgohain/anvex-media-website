@@ -10,6 +10,7 @@ window.addEventListener('scroll', () => {
 
 // Intersection Observer for Fade-Up Animations
 const observerOptions = { root: null, threshold: 0.1 };
+
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
