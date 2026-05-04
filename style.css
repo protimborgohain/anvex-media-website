@@ -1,12 +1,12 @@
 /* === CSS VARIABLES & RESET === */
 :root {
-    --bg-dark: #050507; /* Dark Black Base */
-    --bg-card: rgba(0, 100, 255, 0.04); /* Semi-transparent blue tint for all tabs */
-    --accent-blue: #00d2ff; /* Bright Cyan */
-    --accent-purple: #0044ff; /* Changed from purple to Deep Blue */
+    --bg-dark: #050507; 
+    --bg-card: rgba(0, 100, 255, 0.04); 
+    --accent-blue: #00d2ff; 
+    --accent-purple: #0044ff; 
     --text-main: #ffffff;
     --text-muted: #a0aab2;
-    --glass-border: rgba(0, 210, 255, 0.12); /* Blue tinted border */
+    --glass-border: rgba(0, 210, 255, 0.12); 
     --gradient-primary: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
     --font-main: 'Montserrat', sans-serif;
 }
@@ -80,8 +80,18 @@ nav.scrolled { background: rgba(5, 5, 7, 0.85); backdrop-filter: blur(20px); bor
 .scroll-indicator { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); animation: bounce 2s infinite; color: white; font-size: 1.5rem; opacity: 0.5; }
 @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); } 40% { transform: translateY(-15px) translateX(-50%); } 60% { transform: translateY(-7px) translateX(-50%); } }
 
-/* === TRUST MARQUEE === */
-.trust-strip { background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); border-y: 1px solid rgba(255,255,255,0.05); padding: 2rem 0; overflow: hidden; white-space: nowrap; position: relative; z-index: 2; }
+/* === TRUST MARQUEE (Fixed Invalid Border Property) === */
+.trust-strip { 
+    background: rgba(0, 0, 0, 0.3); 
+    backdrop-filter: blur(10px); 
+    border-top: 1px solid rgba(255,255,255,0.05); 
+    border-bottom: 1px solid rgba(255,255,255,0.05); 
+    padding: 2rem 0; 
+    overflow: hidden; 
+    white-space: nowrap; 
+    position: relative; 
+    z-index: 2; 
+}
 .marquee { display: inline-block; animation: scrollMarquee 25s linear infinite; }
 .marquee span { font-size: 1rem; font-weight: 700; margin: 0 3rem; color: #8892b0; display: inline-flex; align-items: center; gap: 12px; letter-spacing: 2px; text-transform: uppercase; }
 @keyframes scrollMarquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -124,7 +134,7 @@ nav.scrolled { background: rgba(5, 5, 7, 0.85); backdrop-filter: blur(20px); bor
 
 .popular-badge { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); background: var(--gradient-primary); padding: 8px 24px; border-radius: 30px; font-size: 0.85rem; font-weight: 800; color: white; letter-spacing: 1.5px; text-transform: uppercase; box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4); z-index: 10; white-space: nowrap; }
 
-/* === CUSTOM MODAL (Added to match your style) === */
+/* === CUSTOM MODAL === */
 .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(5, 5, 7, 0.8); backdrop-filter: blur(8px); }
 .modal-content { margin: 10vh auto; width: 90%; max-width: 600px; padding: 3rem; } 
 .close-btn { position: absolute; top: 20px; right: 30px; color: var(--text-muted); font-size: 30px; cursor: pointer; transition: 0.3s; }
