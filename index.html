@@ -210,7 +210,7 @@
         </div>
     </section>
 
-    <!-- Consultation Modal -->
+    <!-- Consultation Modal (WITH WhatsApp Logic) -->
     <div id="consultationModal" class="modal">
         <div class="modal-content glass">
             <span class="close-btn" onclick="closeConsultationModal()">&times;</span>
@@ -248,7 +248,7 @@
         </div>
     </div>
 
-    <!-- Custom Package Modal -->
+    <!-- Custom Package Modal (NO WhatsApp Logic) -->
     <div id="customPackageModal" class="modal">
         <div class="modal-content glass">
             <span class="close-btn" onclick="closeModal()">&times;</span>
@@ -276,7 +276,9 @@
             <div class="total-price-display">
                 <h3>Estimated Total: <span class="gradient-text">₹<span id="calculatedPrice">0</span>/mo</span></h3>
             </div>
-            <button class="btn btn-primary" style="margin-top: 20px; width: 100%;" onclick="closeModal(); openConsultationModal();">Proceed & Connect</button>
+            
+            <!-- Button is now a standard link that closes the modal and scrolls to the contact section -->
+            <a href="#contact" class="btn btn-primary" style="margin-top: 20px; width: 100%; text-align: center; display: inline-block; box-sizing: border-box;" onclick="closeModal()">Proceed with Custom Package</a>
         </div>
     </div>
 
