@@ -441,7 +441,7 @@ nav.scrolled {
     border: 1px solid rgba(255,255,255,0.1); 
 }
 
-/* FIX 4: Overrides Instagram's inline strict minimum width that causes overflow on tiny phones */
+/* Overrides Instagram's inline strict minimum width that causes overflow on tiny phones */
 .instagram-media {
     min-width: 100% !important;
 }
@@ -687,7 +687,7 @@ nav.scrolled {
     color: white; 
 }
 
-/* === FOOTER === */
+/* === FOOTER (Fixed Spacing Inequalities) === */
 .footer-line { 
     height: 1px; 
     background: linear-gradient(90deg, transparent, var(--accent-blue), transparent); 
@@ -705,10 +705,17 @@ footer {
 
 .footer-grid { 
     display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Widened minmax for better balance */
     gap: 3rem; 
     max-width: 1200px; 
     margin: 0 auto; 
+}
+
+/* Added specific margin to match the logo gap */
+.footer-grid h4 {
+    margin-bottom: 1.5rem; 
+    font-size: 1.2rem;
+    color: white;
 }
 
 .footer-logo img { 
@@ -717,12 +724,17 @@ footer {
     margin-bottom: 1.5rem; 
 }
 
+/* Added margin below paragraph to separate it evenly from social icons */
+.footer-grid p {
+    margin-bottom: 1.5rem; 
+}
+
 .footer-links { 
     list-style: none; 
 }
 
 .footer-links li { 
-    margin-bottom: 0.8rem; 
+    margin-bottom: 1rem; /* Slightly increased for better spacing */
 }
 
 .footer-links a { 
@@ -737,10 +749,15 @@ footer {
     color: var(--accent-blue); 
 }
 
+/* Changed to Flexbox for perfectly even icon spacing without trailing margins */
+.social-icons {
+    display: flex;
+    gap: 1.2rem; 
+}
+
 .social-icons a { 
     color: white; 
     font-size: 1.5rem; 
-    margin-right: 1.2rem; 
     transition: all 0.3s; 
     display: inline-block; 
 }
@@ -833,7 +850,6 @@ footer {
         gap: 2rem; 
     }
 
-    /* FIX 5: Tightened padding on modals for small phones so they don't break boundaries */
     .modal-content {
         padding: 2rem 1.5rem;
     }
