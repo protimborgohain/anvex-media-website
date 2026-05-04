@@ -3,9 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Anvex Media</title>
+    <title>Login / Sign Up | Anvex Media</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Fade-in animation for smooth form switching */
+        .fade-switch {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
 
@@ -21,28 +31,78 @@
     </a>
 
     <div class="login-wrapper fade-up visible">
-        <div class="glass login-card">
+        <div class="glass login-card" style="padding: 2.5rem 3rem;">
             <img src="https://lh3.googleusercontent.com/d/17XCKA0821hxjZghFPT4FEVmcvagMDqrn" alt="Anvex Media Logo">
-            <h2 style="margin-bottom: 5px;">Welcome Back</h2>
-            <p style="margin-bottom: 30px; font-size: 0.9rem;">Sign in to access your client dashboard.</p>
+            
+            <!-- ================= LOGIN SECTION ================= -->
+            <div id="login-section" class="fade-switch">
+                <h2 style="margin-bottom: 5px;">Welcome Back</h2>
+                <p style="margin-bottom: 30px; font-size: 0.9rem;">Sign in to access your client dashboard.</p>
 
-            <form action="#">
-                <div class="input-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" placeholder="Enter your email" required>
-                </div>
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter your password" required>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Login securely</button>
-            </form>
+                <form action="#">
+                    <div class="input-group">
+                        <label for="login-email">Email Address</label>
+                        <input type="email" id="login-email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Login Securely</button>
+                </form>
 
-            <div style="margin-top: 25px;">
-                <p style="margin: 0; font-size: 0.9rem;">Don't have an account? <a href="#" style="color: var(--accent-blue); text-decoration: none;">Sign Up</a></p>
+                <div style="margin-top: 25px;">
+                    <p style="margin: 0; font-size: 0.9rem;">Don't have an account? <span onclick="toggleForms()" style="color: var(--accent-blue); text-decoration: none; cursor: pointer; font-weight: 600;">Sign Up</span></p>
+                </div>
             </div>
+
+            <!-- ================= SIGN UP SECTION (Initially Hidden) ================= -->
+            <div id="signup-section" class="fade-switch" style="display: none;">
+                <h2 style="margin-bottom: 5px;">Create Account</h2>
+                <p style="margin-bottom: 25px; font-size: 0.9rem;">Join us and start dominating your local market.</p>
+
+                <form action="#">
+                    <div class="input-group">
+                        <label for="reg-name">Full Name</label>
+                        <input type="text" id="reg-name" placeholder="John Doe" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="reg-business">Business Name</label>
+                        <input type="text" id="reg-business" placeholder="e.g. Elite Motors" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="reg-email">Email Address</label>
+                        <input type="email" id="reg-email" placeholder="hello@yourbusiness.com" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="reg-password">Password</label>
+                        <input type="password" id="reg-password" placeholder="Create a strong password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Create Account</button>
+                </form>
+
+                <div style="margin-top: 25px;">
+                    <p style="margin: 0; font-size: 0.9rem;">Already have an account? <span onclick="toggleForms()" style="color: var(--accent-blue); text-decoration: none; cursor: pointer; font-weight: 600;">Log In</span></p>
+                </div>
+            </div>
+
         </div>
     </div>
 
+    <!-- Simple JavaScript to toggle between Login and Sign Up -->
+    <script>
+        function toggleForms() {
+            const loginSection = document.getElementById('login-section');
+            const signupSection = document.getElementById('signup-section');
+
+            if (loginSection.style.display === 'none') {
+                loginSection.style.display = 'block';
+                signupSection.style.display = 'none';
+            } else {
+                loginSection.style.display = 'none';
+                signupSection.style.display = 'block';
+            }
+        }
+    </script>
 </body>
 </html>
