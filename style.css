@@ -220,9 +220,9 @@ nav.scrolled {
     padding: 0.8rem 5%; 
 }
 
-/* 1.5X NAV LOGO UPDATE HERE */
+/* LOGO UPDATE HERE */
 .nav-logo img { 
-    height: 90px; 
+    height: 135px; 
     width: auto; 
     object-fit: contain; 
     transition: transform 0.3s; 
@@ -687,7 +687,7 @@ nav.scrolled {
     color: white; 
 }
 
-/* === FOOTER (Fixed Spacing Inequalities) === */
+/* === FOOTER === */
 .footer-line { 
     height: 1px; 
     background: linear-gradient(90deg, transparent, var(--accent-blue), transparent); 
@@ -717,9 +717,9 @@ footer {
     color: white;
 }
 
-/* 1.5X FOOTER LOGO UPDATE HERE */
+/* LOGO UPDATE HERE */
 .footer-logo img { 
-    height: 98px; 
+    height: 147px; 
     width: auto; 
     margin-bottom: 1.5rem; 
 }
