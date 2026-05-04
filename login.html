@@ -6,73 +6,21 @@
     <title>Login | Anvex Media</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Specific adjustments just for the login page structure */
-        .login-wrapper {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .login-card {
-            width: 100%;
-            max-width: 450px;
-            text-align: center;
-        }
-        .login-card img {
-            height: 70px;
-            margin-bottom: 2rem;
-        }
-        .input-group {
-            margin-bottom: 1.5rem;
-            text-align: left;
-        }
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-        .input-group input {
-            width: 100%;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--glass-border);
-            border-radius: 4px;
-            color: white;
-            font-family: var(--font-main);
-            outline: none;
-            transition: 0.3s;
-        }
-        .input-group input:focus {
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 15px rgba(0, 123, 255, 0.2);
-        }
-        .toggle-link {
-            color: var(--accent-blue);
-            cursor: pointer;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-        .toggle-link:hover {
-            text-decoration: underline;
-        }
-    </style>
 </head>
 <body>
 
     <div class="futuristic-bg">
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
     </div>
 
     <!-- Back to home button -->
-    <a href="index.html" style="position: absolute; top: 30px; left: 30px; color: white; text-decoration: none; font-weight: bold;">
+    <a href="index.html" style="position: absolute; top: 30px; left: 30px; color: white; text-decoration: none; font-weight: bold; z-index: 100;">
         <i class="fas fa-arrow-left"></i> Back to Home
     </a>
 
-    <div class="login-wrapper">
+    <div class="login-wrapper fade-up visible">
         <div class="glass login-card">
             <img src="https://lh3.googleusercontent.com/d/17XCKA0821hxjZghFPT4FEVmcvagMDqrn" alt="Anvex Media Logo">
             <h2 style="margin-bottom: 5px;">Welcome Back</h2>
@@ -91,7 +39,7 @@
             </form>
 
             <div style="margin-top: 25px;">
-                <p style="margin: 0; font-size: 0.9rem;">Don't have an account? <a href="#" class="toggle-link">Sign Up</a></p>
+                <p style="margin: 0; font-size: 0.9rem;">Don't have an account? <a href="#" style="color: var(--accent-blue); text-decoration: none;">Sign Up</a></p>
             </div>
         </div>
     </div>
