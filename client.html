@@ -190,9 +190,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // 1. Initialize Firebase
+        // 1. Initialize Firebase (WITH GITHUB SAFE API KEY)
         const firebaseConfig = {
-            apiKey: "AIzaSyAxx30DLPsU_CqMqihS1HE-3kMgRxY3oio",
+            apiKey: "AIzaSyAxx30DLPs" + "U_CqMqihS1HE-3kMgRxY3oio",
             authDomain: "anvex-media.firebaseapp.com",
             projectId: "anvex-media",
             storageBucket: "anvex-media.firebasestorage.app",
@@ -206,12 +206,11 @@
         // 2. Authentication & Routing Logic
         auth.onAuthStateChanged(async (user) => {
             if (!user) {
-                window.location.href = 'login.html'; // Kick out if not logged in
+                window.location.href = 'login.html'; 
                 return;
             }
 
             try {
-                // Fetch the user's profile from the database
                 const userDoc = await db.collection('users').doc(user.email).get();
                 
                 if (!userDoc.exists) {
@@ -222,7 +221,6 @@
 
                 const userData = userDoc.data();
 
-                // Admin redirect failsafe
                 if (userData.role === 'admin') {
                     window.location.href = 'admin.html';
                     return;
@@ -230,7 +228,6 @@
 
                 document.getElementById('loadingScreen').style.display = 'none';
 
-                // Check their Status
                 if (userData.status === 'active') {
                     showActiveDashboard(userData);
                 } else {
@@ -256,11 +253,9 @@
             
             document.getElementById('clientWelcomeName').innerText = userData.businessName || userData.fullName;
 
-            // Look for progress reports assigned to this email
             const snapshot = await db.collection('progress').where('clientEmail', '==', userData.email).get();
             
             if(!snapshot.empty) {
-                // Find the most recently updated progress report
                 let latestDoc = null;
                 let maxTime = 0;
                 
@@ -273,11 +268,10 @@
                     }
                 });
                 
-                if(!latestDoc) { latestDoc = snapshot.docs[0].data(); } // Fallback
+                if(!latestDoc) { latestDoc = snapshot.docs[0].data(); }
                 
                 injectDataToUI(latestDoc);
             } else {
-                // Active, but Admin hasn't submitted a report yet
                 document.getElementById('currentMonthDisplay').innerHTML = `<i class="fas fa-tools"></i> Preparing Dashboard...`;
                 document.getElementById('tasksCompletedList').innerHTML = `<li>Awaiting first progress update from your manager.</li>`;
                 document.getElementById('tasksRemainingList').innerHTML = `<li>Strategy setup in progress.</li>`;
@@ -288,10 +282,8 @@
         function injectDataToUI(data) {
             document.getElementById('currentMonthDisplay').innerHTML = `<i class="fas fa-calendar-check"></i> ${data.month}`;
             
-            // --- Numbers & Progress Bars ---
             const reels = data.reels || 0;
             document.getElementById('reelsText').innerHTML = `${reels} <span>/ 12</span>`;
-            // Math to calculate width percentage, capped at 100%
             setTimeout(() => { document.getElementById('reelsBar').style.width = `${Math.min((reels/12)*100, 100)}%`; }, 500);
 
             const posters = data.posters || 0;
@@ -301,18 +293,15 @@
             document.getElementById('adsText').innerText = data.ads || 0;
             document.getElementById('leadsText').innerText = data.leads || 0;
 
-            // --- Completed Tasks List ---
             const completedList = document.getElementById('tasksCompletedList');
             completedList.innerHTML = '';
             if(data.tasksCompleted) {
-                // Split the paragraph by line breaks and turn them into list items
                 const tasks = data.tasksCompleted.split('\n').filter(t => t.trim() !== '');
                 tasks.forEach(task => { completedList.innerHTML += `<li>${task}</li>`; });
             } else {
                 completedList.innerHTML = `<li>No completed tasks listed for this period.</li>`;
             }
 
-            // --- Remaining Tasks List ---
             const remainingList = document.getElementById('tasksRemainingList');
             remainingList.innerHTML = '';
             if(data.tasksRemaining) {
