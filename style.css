@@ -11,7 +11,6 @@
     --font-main: 'Montserrat', sans-serif;
 }
 
-/* FIX 1: Strict border-box and global image containment */
 *, *::before, *::after { 
     margin: 0; 
     padding: 0; 
@@ -23,7 +22,6 @@ img {
     height: auto;
 }
 
-/* FIX 2: Strict HTML/Body locking to prevent mobile panning */
 html, body { 
     width: 100%;
     overflow-x: hidden; 
@@ -40,7 +38,7 @@ body {
     position: relative; 
 }
 
-/* FIX 3: Changed 100vw to 100% to prevent scrollbar overflow */
+/* === FUTURISTIC ANIMATED BACKGROUND === */
 .futuristic-bg {
     position: fixed; 
     top: 0; 
@@ -205,7 +203,7 @@ nav {
     position: fixed; 
     top: 0; 
     width: 100%; 
-    padding: 0.2rem 5%; /* Much thinner padding */
+    padding: 0.2rem 5%; 
     z-index: 1000; 
     transition: all 0.4s ease; 
     display: flex; 
@@ -217,10 +215,9 @@ nav.scrolled {
     background: rgba(5, 5, 7, 0.85); 
     backdrop-filter: blur(20px); 
     border-bottom: 1px solid var(--glass-border); 
-    padding: 0.2rem 5%; /* Keeps it thin */
+    padding: 0.2rem 5%; 
 }
 
-/* LOGO */
 .nav-logo img { 
     height: 135px; 
     width: auto; 
@@ -287,7 +284,7 @@ nav.scrolled {
 .nav-menu a:hover {
     background: rgba(0, 210, 255, 0.1);
     color: var(--accent-blue);
-    padding-left: 28px; /* Smooth indention on hover */
+    padding-left: 28px; 
 }
 
 /* === HERO SECTION === */
@@ -499,7 +496,6 @@ nav.scrolled {
     border: 1px solid rgba(255,255,255,0.1); 
 }
 
-/* Overrides Instagram's inline strict minimum width that causes overflow on tiny phones */
 .instagram-media {
     min-width: 100% !important;
 }
@@ -857,7 +853,6 @@ footer {
 
 /* === RESPONSIVE / MOBILE TWEAKS === */
 @media (max-width: 768px) {
-    /* Locks logo directly in the center for mobile */
     nav { 
         justify-content: center; 
     }
