@@ -295,8 +295,7 @@ nav.scrolled {
     align-items: center; 
     justify-content: center; 
     text-align: center; 
-    /* Increased top padding to push text down below the large logo */
-    padding: 140px 5% 0 5%; 
+    padding: 140px 5% 0 5%; /* Desktop only spacing */
     overflow: hidden; 
 }
 
@@ -860,12 +859,17 @@ footer {
     
     .nav-logo { 
         margin: 0 auto; 
-        transform: translateX(-2%); /* Shifts logo exactly 2% to the left */
+        transform: translateX(-2%); 
     }
     
     .nav-right { 
         position: absolute; 
         right: 5%; 
+    }
+
+    /* Restores perfect centered layout for mobile by overriding the desktop padding */
+    .hero {
+        padding: 0 5%;
     }
 
     h1 { 
