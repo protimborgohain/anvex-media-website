@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Dashboard | Anvex Media</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Links to your existing stylesheet -->
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* === CLIENT DASHBOARD SPECIFIC STYLES === */
+        body {
+            padding-top: 100px; 
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            width: 95%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-bottom: 5rem;
+        }
+
+        .dash-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 1.5rem;
+        }
+
+        .dash-header h2 {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+        }
+
+        .dash-header p {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .month-selector select {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--accent-blue);
+            color: white;
+            border-radius: 8px;
+            font-family: var(--font-main);
+            outline: none;
+            cursor: pointer;
+        }
+
+        .month-selector select option {
+            background: var(--bg-dark);
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            padding: 1.8rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .metric-icon {
+            font-size: 2rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .metric-card h4 {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .metric-card h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .metric-card h2 span {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+        }
+
+        /* Custom Progress Bars */
+        .progress-bg {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            transition: width 1s ease-in-out;
+        }
+
+        .progress-fill.green { background: #25d366; }
+        .progress-fill.purple { background: var(--accent-purple); }
+
+        /* Tasks Grid */
+        .tasks-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .task-box {
+            padding: 2rem;
+        }
+
+        .task-box h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .task-list {
+            list-style: none;
+        }
+
+        .task-list li {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 15px;
+            color: #e2e8f0;
+            line-height: 1.5;
+            font-size: 1.05rem;
+        }
+
+        .task-list.completed li::before {
+            content: '\f058'; /* FontAwesome check-circle */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            top: 2px;
+            color: #25d366;
+            font-size: 1.2rem;
+        }
+
+        .task-list.pending li::before {
+            content: '\f252'; /* FontAwesome hourglass */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 2px;
+            top: 2px;
+            color: var(--accent-blue);
+            font-size: 1.1rem;
+        }
+
+        /* Support Box */
+        .support-box {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(0, 210, 255, 0.05), rgba(0, 68, 255, 0.05));
+            border: 1px solid var(--accent-blue);
+        }
+
+        .support-box i {
+            font-size: 3rem;
+            color: var(--accent-blue);
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 900px) {
+            .tasks-grid {
+                grid-template-columns: 1fr;
+            }
+            .dash-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Animated Background -->
+    <div class="futuristic-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Client Navbar -->
+    <nav id="navbar" class="scrolled" style="transform: none; pointer-events: auto; padding: 0.5rem 5%;">
+        <a href="index.html" class="nav-logo">
+            <img src="logo1.png" alt="Anvex Media Logo" style="height: 60px;"> 
+        </a>
+        
+        <div class="nav-right" style="display: flex; align-items: center; gap: 20px;">
+            <span style="font-weight: 600; color: var(--text-muted); display: none; @media(min-width:768px){display:inline;}">Client Portal</span>
+            <a href="index.html" class="btn btn-secondary" style="padding: 8px 20px; font-size: 0.8rem;">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Dashboard Area -->
+    <div class="dashboard-container fade-up visible">
+        
+        <div class="dash-header">
+            <div>
+                <h2>Welcome back, <span class="gradient-text">Elite Motors</span></h2>
+                <p>Here is your active campaign progress and digital growth report.</p>
+            </div>
+            <div class="month-selector">
+                <select>
+                    <option>May 2026 (Current)</option>
+                    <option>April 2026</option>
+                    <option>March 2026</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- DELIVERABLES METRICS GRID (Linked to Admin)    -->
+        <!-- ============================================== -->
+        <div class="metrics-grid">
+            
+            <div class="glass metric-card">
+                <div>
+                    <i class="fas fa-video metric-icon"></i>
+                    <h4>Reels Uploaded</h4>
+                    <h2>4 <span>/ 12</span></h2>
+                </div>
+                <div class="progress-bg">
+                    <!-- Calculates to roughly 33% -->
+                    <div class="progress-fill" style="width: 33%;"></div>
+                </div>
+            </div>
+
+            <div class="glass metric-card">
+                <div>
+                    <i class="fas fa-image metric-icon"></i>
+                    <h4>Posters Designed</h4>
+                    <h2>2 <span>/ 4</span></h2>
+                </div>
+                <div class="progress-bg">
+                    <!-- Calculates to 50% -->
+                    <div class="progress-fill purple" style="width: 50%;"></div>
+                </div>
+            </div>
+
+            <div class="glass metric-card">
+                <div>
+                    <i class="fas fa-bullseye metric-icon"></i>
+                    <h4>Active Ad Campaigns</h4>
+                    <h2>1</h2>
+                </div>
+                <p style="margin:0; font-size:0.85rem; color: #25d366;"><i class="fas fa-circle" style="font-size:0.6rem; margin-right:5px;"></i> Running smoothly</p>
+            </div>
+
+            <div class="glass metric-card">
+                <div>
+                    <i class="fas fa-users metric-icon"></i>
+                    <h4>Leads Generated</h4>
+                    <h2 class="gradient-text">34</h2>
+                </div>
+                <p style="margin:0; font-size:0.85rem; color: var(--text-muted);">From targeted campaigns</p>
+            </div>
+
+        </div>
+
+        <!-- ============================================== -->
+        <!-- TASKS AND SUPPORT GRID                         -->
+        <!-- ============================================== -->
+        <div class="tasks-grid">
+            
+            <!-- Tasks List (Linked to Admin Textareas) -->
+            <div class="glass task-box">
+                <h3 style="color: #25d366;"><i class="fas fa-clipboard-check"></i> Work Completed This Month</h3>
+                <ul class="task-list completed" style="margin-bottom: 2rem;">
+                    <li>Shot 5 high-quality raw videos at the showroom featuring the new inventory.</li>
+                    <li>Launched retargeting ad campaign focusing on previous website visitors.</li>
+                    <li>Optimized Google My Business profile with updated holiday hours and banners.</li>
+                    <li>Edited and published 4 trending Instagram Reels.</li>
+                </ul>
+
+                <h3 style="color: var(--accent-blue); border-top: 1px solid var(--glass-border); padding-top: 2rem;"><i class="fas fa-tasks"></i> Up Next / In Progress</h3>
+                <ul class="task-list pending">
+                    <li>Edit and color-grade the remaining 3 videos from the recent shoot.</li>
+                    <li>Design promotional graphic poster for the upcoming weekend sale.</li>
+                    <li>Compile and send the end-of-month analytics and lead report.</li>
+                </ul>
+            </div>
+
+            <!-- Support / Contact Admin Box -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                <div class="glass support-box">
+                    <i class="fab fa-whatsapp"></i>
+                    <h3 style="margin-bottom: 10px;">Need Assistance?</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 20px;">Have a question about a post or want to request a revision? Your account manager is one text away.</p>
+                    <a href="https://wa.me/918011595012" target="_blank" class="btn btn-primary" style="width: 100%; padding: 12px;">Message Manager</a>
+                </div>
+
+                <div class="glass" style="padding: 1.5rem; text-align: center;">
+                    <h4 style="margin-bottom: 10px; color: var(--text-muted);">Current Package</h4>
+                    <h3 class="gradient-text" style="margin-bottom: 5px;">The Growth Engine</h3>
+                    <p style="font-size: 0.85rem; margin: 0;">Renews on June 1, 2026</p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
