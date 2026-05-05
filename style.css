@@ -295,7 +295,8 @@ nav.scrolled {
     align-items: center; 
     justify-content: center; 
     text-align: center; 
-    padding: 0 5%; 
+    /* Increased top padding to push text down below the large logo */
+    padding: 140px 5% 0 5%; 
     overflow: hidden; 
 }
 
@@ -859,6 +860,7 @@ footer {
     
     .nav-logo { 
         margin: 0 auto; 
+        transform: translateX(-2%); /* Shifts logo exactly 2% to the left */
     }
     
     .nav-right { 
