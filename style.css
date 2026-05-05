@@ -867,9 +867,14 @@ footer {
         right: 5%; 
     }
 
-    /* Restores perfect centered layout for mobile by overriding the desktop padding */
+    /* Fixes the mobile vertical spacing to align perfectly under the header */
     .hero {
         padding: 0 5%;
+        align-items: flex-start; /* Prevents vertical centering */
+    }
+
+    .hero .container {
+        padding-top: 160px; /* Pins the content perfectly underneath the large logo */
     }
 
     h1 { 
