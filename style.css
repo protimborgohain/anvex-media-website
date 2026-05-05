@@ -205,17 +205,16 @@ nav {
     width: 100%; 
     padding: 0.2rem 5%; 
     z-index: 1000; 
-    transition: all 0.5s ease-in-out; /* Slightly smoother/slower for the hide effect */
+    transition: all 0.5s ease-in-out; 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
 }
 
-/* UPDATED: Nav slides up and fades out when scrolling */
 nav.scrolled { 
     transform: translateY(-100%);
     opacity: 0;
-    pointer-events: none; /* Prevents invisible clicks */
+    pointer-events: none; 
 }
 
 .nav-logo img { 
@@ -295,7 +294,7 @@ nav.scrolled {
     align-items: center; 
     justify-content: center; 
     text-align: center; 
-    padding: 140px 5% 0 5%; /* Desktop only spacing */
+    padding: 140px 5% 0 5%; 
     overflow: hidden; 
 }
 
@@ -477,27 +476,47 @@ nav.scrolled {
     font-size: 1.2rem; 
 }
 
-/* === PORTFOLIO === */
-.portfolio-grid { 
-    display: flex; 
-    flex-wrap: wrap; 
-    justify-content: center; 
-    gap: 2rem; 
-    margin-top: 4rem; 
+/* === NEW VIDEO MARQUEE PORTFOLIO === */
+.video-marquee {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    padding: 3rem 0;
+    margin-top: 1rem;
 }
 
-.ig-embed-wrapper { 
-    width: 100%; 
-    max-width: 340px; 
-    border-radius: 16px; 
-    overflow: hidden; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-    background: #ffffff; 
-    border: 1px solid rgba(255,255,255,0.1); 
+.video-track {
+    display: inline-flex;
+    gap: 20px;
+    animation: scrollVideos 40s linear infinite;
 }
 
-.instagram-media {
-    min-width: 100% !important;
+.video-track:hover {
+    animation-play-state: paused;
+}
+
+.marquee-video {
+    height: 320px;
+    width: 180px;
+    object-fit: cover;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.3s ease, border-color 0.3s;
+    border: 2px solid transparent;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+
+.marquee-video:hover {
+    transform: scale(1.05);
+    border-color: var(--accent-blue);
+    z-index: 10;
+}
+
+@keyframes scrollVideos {
+    0% { transform: translateX(0); }
+    /* Moves exactly halfway through the track to perfectly loop the duplicates */
+    100% { transform: translateX(calc(-50% - 10px)); } 
 }
 
 /* === PRICING === */
@@ -603,6 +622,40 @@ nav.scrolled {
     max-width: 600px; 
     padding: 3rem; 
 } 
+
+/* Special styling just for the pop-up video player modal */
+.video-popup {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.video-modal-content {
+    width: 90%;
+    max-width: 400px; 
+    position: relative;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+}
+
+#popupVideoPlayer {
+    width: 100%;
+    max-height: 85vh;
+    border-radius: 16px;
+    outline: none;
+    display: block;
+    background: black;
+}
+
+.video-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: white;
+    font-size: 40px;
+    z-index: 2001;
+}
 
 .close-btn { 
     position: absolute; 
@@ -926,5 +979,11 @@ footer {
 
     .modal-content {
         padding: 2rem 1.5rem;
+    }
+    
+    /* Slightly smaller marquee videos for phones */
+    .marquee-video {
+        height: 280px;
+        width: 157px;
     }
 }
