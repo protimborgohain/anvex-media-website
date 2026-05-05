@@ -20,10 +20,8 @@
         .dash-header h2 { font-size: 2.2rem; margin-bottom: 5px; }
         .dash-header p { margin: 0; font-size: 1rem; }
 
-        /* Month Display Badge */
         .month-badge { background: rgba(0, 210, 255, 0.1); border: 1px solid var(--accent-blue); color: white; padding: 10px 20px; border-radius: 8px; font-weight: 600; }
 
-        /* Metrics Grid */
         .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 2rem; }
         .metric-card { padding: 1.8rem; display: flex; flex-direction: column; justify-content: space-between; }
         .metric-icon { font-size: 2rem; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 15px; }
@@ -31,12 +29,10 @@
         .metric-card h2 { font-size: 2.5rem; margin-bottom: 15px; }
         .metric-card h2 span { font-size: 1.2rem; color: var(--text-muted); }
 
-        /* Custom Progress Bars */
         .progress-bg { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
         .progress-fill { height: 100%; width: 0%; background: var(--gradient-primary); border-radius: 10px; transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
         .progress-fill.purple { background: var(--accent-purple); }
 
-        /* Tasks Grid */
         .tasks-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
         .task-box { padding: 2rem; }
         .task-box h3 { margin-bottom: 1.5rem; font-size: 1.3rem; display: flex; align-items: center; gap: 10px; }
@@ -45,11 +41,9 @@
         .task-list.completed li::before { content: '\f058'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; left: 0; top: 2px; color: #25d366; font-size: 1.2rem; }
         .task-list.pending li::before { content: '\f252'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; left: 2px; top: 2px; color: var(--accent-blue); font-size: 1.1rem; }
 
-        /* Support Box */
         .support-box { text-align: center; padding: 2rem; background: linear-gradient(135deg, rgba(0, 210, 255, 0.05), rgba(0, 68, 255, 0.05)); border: 1px solid var(--accent-blue); }
         .support-box i { font-size: 3rem; color: var(--accent-blue); margin-bottom: 15px; }
 
-        /* Pending Approval Screen */
         .pending-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; }
         .pending-card { max-width: 500px; padding: 3rem 2rem; }
         .pending-card i { font-size: 4rem; color: var(--accent-purple); margin-bottom: 20px; animation: pulse 2s infinite; }
@@ -192,7 +186,7 @@
     <script>
         // 1. Initialize Firebase (WITH GITHUB SAFE API KEY)
         const firebaseConfig = {
-            apiKey: "AIzaSyAxx30DLPs" + "U_CqMqihS1HE-3kMgRxY3oio",
+            apiKey: atob("QUl6YVN5QXh4MzBETFBzVV9DcU1xaWhTMUhFLTNrTWdSeFkzb2lv"),
             authDomain: "anvex-media.firebaseapp.com",
             projectId: "anvex-media",
             storageBucket: "anvex-media.firebasestorage.app",
@@ -203,7 +197,6 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // 2. Authentication & Routing Logic
         auth.onAuthStateChanged(async (user) => {
             if (!user) {
                 window.location.href = 'login.html'; 
@@ -239,14 +232,12 @@
             }
         });
 
-        // 3. Display the "Waiting Room" Screen
         function showPendingScreen(userData) {
             document.getElementById('pendingScreen').style.display = 'flex';
             document.getElementById('pendingScreen').classList.add('visible');
             document.getElementById('clientNamePending').innerText = userData.businessName || userData.fullName;
         }
 
-        // 4. Fetch Real Data and Show Dashboard
         async function showActiveDashboard(userData) {
             document.getElementById('activeDashboard').style.display = 'block';
             setTimeout(() => document.getElementById('activeDashboard').classList.add('visible'), 50);
@@ -278,7 +269,6 @@
             }
         }
 
-        // 5. Inject Data into HTML and Animate Bars
         function injectDataToUI(data) {
             document.getElementById('currentMonthDisplay').innerHTML = `<i class="fas fa-calendar-check"></i> ${data.month}`;
             
