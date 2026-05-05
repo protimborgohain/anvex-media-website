@@ -205,7 +205,7 @@ nav {
     position: fixed; 
     top: 0; 
     width: 100%; 
-    padding: 1rem 5%; 
+    padding: 0.2rem 5%; /* Much thinner padding */
     z-index: 1000; 
     transition: all 0.4s ease; 
     display: flex; 
@@ -217,10 +217,10 @@ nav.scrolled {
     background: rgba(5, 5, 7, 0.85); 
     backdrop-filter: blur(20px); 
     border-bottom: 1px solid var(--glass-border); 
-    padding: 0.8rem 5%; 
+    padding: 0.2rem 5%; /* Keeps it thin */
 }
 
-/* LOGO UPDATE HERE */
+/* LOGO */
 .nav-logo img { 
     height: 135px; 
     width: auto; 
@@ -230,6 +230,64 @@ nav.scrolled {
 
 .nav-logo:hover img { 
     transform: scale(1.05); 
+}
+
+/* === HAMBURGER MENU === */
+.nav-right {
+    position: relative;
+}
+
+.menu-toggle {
+    font-size: 1.8rem;
+    color: white;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.menu-toggle:hover {
+    color: var(--accent-blue);
+}
+
+.nav-menu {
+    position: absolute;
+    top: 130%; 
+    right: 0;
+    background: rgba(5, 5, 7, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    min-width: 220px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+}
+
+.nav-menu.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.nav-menu a {
+    color: white;
+    text-decoration: none;
+    padding: 12px 24px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: block;
+}
+
+.nav-menu a:hover {
+    background: rgba(0, 210, 255, 0.1);
+    color: var(--accent-blue);
+    padding-left: 28px; /* Smooth indention on hover */
 }
 
 /* === HERO SECTION === */
@@ -717,7 +775,6 @@ footer {
     color: white;
 }
 
-/* LOGO UPDATE HERE */
 .footer-logo img { 
     height: 147px; 
     width: auto; 
@@ -798,8 +855,22 @@ footer {
     transform: scale(1.15); 
 }
 
-/* RESPONSIVE / MOBILE TWEAKS */
+/* === RESPONSIVE / MOBILE TWEAKS === */
 @media (max-width: 768px) {
+    /* Locks logo directly in the center for mobile */
+    nav { 
+        justify-content: center; 
+    }
+    
+    .nav-logo { 
+        margin: 0 auto; 
+    }
+    
+    .nav-right { 
+        position: absolute; 
+        right: 5%; 
+    }
+
     h1 { 
         letter-spacing: 0px; 
     }
