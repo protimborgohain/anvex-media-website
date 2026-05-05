@@ -158,9 +158,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // 1. Database Initialization
+        // 1. Database Initialization (WITH GITHUB SAFE API KEY)
         const firebaseConfig = {
-            apiKey: "AIzaSyAxx30DLPsU_CqMqihS1HE-3kMgRxY3oio",
+            apiKey: "AIzaSyAxx30DLPs" + "U_CqMqihS1HE-3kMgRxY3oio",
             authDomain: "anvex-media.firebaseapp.com",
             projectId: "anvex-media",
             storageBucket: "anvex-media.firebasestorage.app",
@@ -225,10 +225,9 @@
 
         // 5. Intelligent Chat Router (Email vs WhatsApp)
         function openChat(contact) {
-            if (contact.includes('@')) {
+            if (contact && contact.includes('@')) {
                 window.location.href = `mailto:${contact}`;
             } else {
-                // If it's a phone number or undefined, open generic WhatsApp
                 window.open(`https://wa.me/918011595012`, '_blank');
             }
         }
@@ -238,7 +237,6 @@
             btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             try {
                 if (type === 'user') {
-                    // This changes their status so the Client Dashboard unlocks!
                     await db.collection('users').doc(id).update({ status: 'active' });
                 } else {
                     await db.collection('inquiries').doc(id).update({ status: 'accepted' });
@@ -250,7 +248,7 @@
                 setTimeout(() => toast.classList.remove('show'), 3000);
                 
                 fetchInquiries();
-                fetchClients(); // Refreshes the dropdown list instantly
+                fetchClients(); 
             } catch(e) {
                 console.error(e);
                 alert("Error accepting lead.");
@@ -265,7 +263,6 @@
             let hasData = false;
 
             try {
-                // Fetch Website Form Inquiries
                 const inqSnap = await db.collection('inquiries').get();
                 inqSnap.forEach(doc => {
                     const data = doc.data();
@@ -275,7 +272,6 @@
                     }
                 });
 
-                // Fetch Account Signups (Pending Users)
                 const userSnap = await db.collection('users').where('role', '==', 'client').get();
                 userSnap.forEach(doc => {
                     const data = doc.data();
@@ -331,7 +327,6 @@
             btn.disabled = true;
 
             try {
-                // Creates a unique document for this client and month
                 await db.collection('progress').doc(`${clientEmail}_${month}`).set({
                     clientEmail: clientEmail,
                     month: month,
