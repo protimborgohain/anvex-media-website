@@ -114,3 +114,21 @@ function sendToWhatsApp(event) {
     closeConsultationModal();
     document.getElementById('consultationForm').reset();
 }
+
+// === Hamburger Menu Toggle Logic ===
+function toggleMenu() {
+    document.getElementById('navMenu').classList.toggle('active');
+}
+
+// Close menu when clicking outside of it
+window.addEventListener('click', function(e) {
+    const navMenu = document.getElementById('navMenu');
+    const menuToggle = document.querySelector('.menu-toggle');
+    
+    // Check if the click was outside both the menu and the hamburger icon
+    if (navMenu && menuToggle) {
+        if (!navMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+            navMenu.classList.remove('active');
+        }
+    }
+});
