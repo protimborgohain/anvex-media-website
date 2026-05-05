@@ -51,6 +51,9 @@ function runCounters() {
 // === Modals Logic ===
 const packageModal = document.getElementById("customPackageModal");
 const consultationModal = document.getElementById("consultationModal");
+const videoModal = document.getElementById("videoModal");
+const popupVideoPlayer = document.getElementById("popupVideoPlayer");
+
 const checkboxes = document.querySelectorAll('.service-checkbox');
 const priceDisplay = document.getElementById('calculatedPrice');
 
@@ -62,6 +65,19 @@ function closeModal() { packageModal.style.display = "none"; }
 function openConsultationModal() { consultationModal.style.display = "block"; }
 function closeConsultationModal() { consultationModal.style.display = "none"; }
 
+// NEW: Open/Close Video Player Modal
+function openVideoModal(src) {
+    videoModal.style.display = "flex"; // Flex centers the video in the screen
+    popupVideoPlayer.src = src;
+    popupVideoPlayer.play();
+}
+
+function closeVideoModal() {
+    videoModal.style.display = "none";
+    popupVideoPlayer.pause();
+    popupVideoPlayer.src = ""; // Clear source to stop downloading in background
+}
+
 // Close modals if user clicks outside of the content box
 window.onclick = function(event) {
     if (event.target == packageModal) {
@@ -69,6 +85,9 @@ window.onclick = function(event) {
     }
     if (event.target == consultationModal) {
         consultationModal.style.display = "none";
+    }
+    if (event.target == videoModal) {
+        closeVideoModal();
     }
 }
 
@@ -90,9 +109,8 @@ checkboxes.forEach(checkbox => {
 
 // === WhatsApp Form Submission Logic ===
 function sendToWhatsApp(event) {
-    event.preventDefault(); // Prevent the page from reloading
+    event.preventDefault(); 
 
-    // Get input values
     const name = document.getElementById('c_name').value;
     const business = document.getElementById('c_business').value;
     const category = document.getElementById('c_category').value;
@@ -100,17 +118,11 @@ function sendToWhatsApp(event) {
     const time = document.getElementById('c_time').value;
 
     const phoneNumber = "918011595012";
-
-    // Format the message for WhatsApp
     const message = `*New Consultation Request*%0A%0A*Name:* ${name}%0A*Business Name:* ${business}%0A*Category:* ${category}%0A*Location:* ${location}%0A*Preferred Time:* ${time}`;
-
-    // Create WhatsApp URL
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
 
-    // Open WhatsApp in a new tab
     window.open(whatsappUrl, '_blank');
 
-    // Close the modal and reset the form
     closeConsultationModal();
     document.getElementById('consultationForm').reset();
 }
@@ -120,12 +132,10 @@ function toggleMenu() {
     document.getElementById('navMenu').classList.toggle('active');
 }
 
-// Close menu when clicking outside of it
 window.addEventListener('click', function(e) {
     const navMenu = document.getElementById('navMenu');
     const menuToggle = document.querySelector('.menu-toggle');
     
-    // Check if the click was outside both the menu and the hamburger icon
     if (navMenu && menuToggle) {
         if (!navMenu.contains(e.target) && !menuToggle.contains(e.target)) {
             navMenu.classList.remove('active');
