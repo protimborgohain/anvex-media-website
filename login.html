@@ -7,24 +7,23 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Compact Form Overrides */
         .login-wrapper {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 60px 20px; /* Prevents touching the top/bottom of the screen */
+            padding: 60px 20px; 
         }
         
         .compact-card {
             width: 100%;
-            max-width: 400px; /* Narrower, more organized width */
-            padding: 2rem !important; /* Tighter inner padding */
+            max-width: 400px; 
+            padding: 2rem !important; 
             border-radius: 20px;
         }
 
         .compact-card img {
-            height: 45px; /* Scaled down logo */
+            height: 45px; 
             margin-bottom: 1rem;
         }
 
@@ -39,7 +38,7 @@
         }
 
         .compact-input-group {
-            margin-bottom: 1rem; /* Tighter gap between fields */
+            margin-bottom: 1rem; 
             text-align: left;
         }
 
@@ -53,10 +52,10 @@
 
         .compact-input-group input {
             width: 100%;
-            padding: 10px 15px; /* Slimmer inputs */
+            padding: 10px 15px; 
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--glass-border);
-            border-radius: 8px; /* Less rounded for a cleaner, professional look */
+            border-radius: 8px; 
             color: white;
             font-family: var(--font-main);
             font-size: 0.9rem;
@@ -75,7 +74,6 @@
             border-radius: 8px;
         }
 
-        /* Fade-in animation for smooth form switching */
         .fade-switch {
             animation: fadeIn 0.3s ease-in-out;
         }
@@ -84,7 +82,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* NEW: Error Box Styling matching your compact theme */
         #errorBox {
             color: #ff4d4d;
             background: rgba(255, 77, 77, 0.1);
@@ -95,6 +92,7 @@
             margin-bottom: 15px;
             display: none;
             text-align: center;
+            transition: 0.3s;
         }
     </style>
 </head>
@@ -106,7 +104,6 @@
         <div class="orb orb-3"></div>
     </div>
 
-    <!-- Back to home button -->
     <a href="index.html" style="position: absolute; top: 30px; left: 30px; color: white; text-decoration: none; font-weight: bold; z-index: 100; font-size: 0.9rem;">
         <i class="fas fa-arrow-left"></i> Back to Home
     </a>
@@ -115,10 +112,9 @@
         <div class="glass compact-card">
             <img src="https://lh3.googleusercontent.com/d/17XCKA0821hxjZghFPT4FEVmcvagMDqrn" alt="Anvex Media Logo">
             
-            <!-- Global Error Box -->
             <div id="errorBox"></div>
             
-            <!-- ================= LOGIN SECTION ================= -->
+            <!-- LOGIN SECTION -->
             <div id="login-section" class="fade-switch">
                 <h2>Welcome Back</h2>
                 <p>Sign in to access your dashboard.</p>
@@ -140,7 +136,7 @@
                 </div>
             </div>
 
-            <!-- ================= SIGN UP SECTION (Initially Hidden) ================= -->
+            <!-- SIGN UP SECTION -->
             <div id="signup-section" class="fade-switch" style="display: none;">
                 <h2>Create Account</h2>
                 <p>Join us and start dominating your local market.</p>
@@ -183,24 +179,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // 1. Simple JavaScript to toggle between Login and Sign Up
-        function toggleForms() {
-            const loginSection = document.getElementById('login-section');
-            const signupSection = document.getElementById('signup-section');
-            const errorBox = document.getElementById('errorBox');
-            
-            errorBox.style.display = 'none'; // Clear errors on toggle
-
-            if (loginSection.style.display === 'none') {
-                loginSection.style.display = 'block';
-                signupSection.style.display = 'none';
-            } else {
-                loginSection.style.display = 'none';
-                signupSection.style.display = 'block';
-            }
-        }
-
-        // 2. Initialize Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAxx30DLPsU_CqMqihS1HE-3kMgRxY3oio",
             authDomain: "anvex-media.firebaseapp.com",
@@ -212,55 +190,76 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-
         const errorBox = document.getElementById('errorBox');
 
-        // ==========================================
-        // 3. LOGIN LOGIC
-        // ==========================================
+        // SESSION PERSISTENCE CHECK (Auto-redirect if already logged in)
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                const userDoc = await db.collection('users').doc(user.email).get();
+                if (userDoc.exists && userDoc.data().role === 'admin') {
+                    window.location.href = "admin.html";
+                } else {
+                    window.location.href = "client.html";
+                }
+            }
+        });
+
+        function toggleForms() {
+            const loginSection = document.getElementById('login-section');
+            const signupSection = document.getElementById('signup-section');
+            errorBox.style.display = 'none'; 
+
+            if (loginSection.style.display === 'none') {
+                loginSection.style.display = 'block';
+                signupSection.style.display = 'none';
+            } else {
+                loginSection.style.display = 'none';
+                signupSection.style.display = 'block';
+            }
+        }
+
+        // LOGIN LOGIC
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const email = document.getElementById('login-email').value.trim().toLowerCase();
             const password = document.getElementById('login-password').value;
             const loginBtn = document.getElementById('loginBtn');
 
-            // Button loading state
             loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
             loginBtn.disabled = true;
             errorBox.style.display = 'none';
 
             try {
-                // Authenticate
                 await auth.signInWithEmailAndPassword(email, password);
-
-                // Check Role in Database
-                const userDoc = await db.collection('users').doc(email).get();
-
-                if (userDoc.exists && userDoc.data().role === 'admin') {
-                    window.location.href = "admin.html"; // Route to Admin
-                } else {
-                    window.location.href = "client.html"; // Route to Client
-                }
-
+                // The onAuthStateChanged function above will automatically handle the redirect now!
             } catch (error) {
-                if(error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-                    errorBox.innerText = "Invalid email or password.";
+                // SMART ERROR HANDLING
+                if(error.code === 'auth/user-not-found') {
+                    errorBox.innerText = "Email not registered. Redirecting to Sign Up...";
+                    errorBox.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        toggleForms();
+                        document.getElementById('reg-email').value = email; // Auto-fill their email
+                        errorBox.style.display = 'none';
+                    }, 1500);
+
+                } else if(error.code === 'auth/wrong-password') {
+                    errorBox.innerText = "Incorrect password. Please try again.";
+                    errorBox.style.display = 'block';
                 } else {
-                    errorBox.innerText = error.message;
+                    errorBox.innerText = "Invalid credentials. Please try again.";
+                    errorBox.style.display = 'block';
                 }
-                errorBox.style.display = 'block';
+                
                 loginBtn.innerHTML = 'Login Securely';
                 loginBtn.disabled = false;
             }
         });
 
-        // ==========================================
-        // 4. SIGN UP LOGIC
-        // ==========================================
+        // SIGN UP LOGIC
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const name = document.getElementById('reg-name').value;
             const business = document.getElementById('reg-business').value;
             const location = document.getElementById('reg-location').value;
@@ -268,28 +267,21 @@
             const password = document.getElementById('reg-password').value;
             const signupBtn = document.getElementById('signupBtn');
 
-            // Button loading state
             signupBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
             signupBtn.disabled = true;
             errorBox.style.display = 'none';
 
             try {
-                // 1. Create the user in Firebase Auth
                 await auth.createUserWithEmailAndPassword(email, password);
-
-                // 2. Save their profile data in Firestore
                 await db.collection('users').doc(email).set({
                     fullName: name,
                     businessName: business,
                     location: location,
                     email: email,
-                    role: "client", // Automatically assigns them the client role
+                    role: "client", 
                     joinedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-
-                // 3. Send them directly to the client dashboard
-                window.location.href = "client.html";
-
+                // Auto-redirect handled by onAuthStateChanged
             } catch (error) {
                 if(error.code === 'auth/email-already-in-use') {
                     errorBox.innerText = "An account with this email already exists.";
