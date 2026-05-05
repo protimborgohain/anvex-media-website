@@ -13,6 +13,48 @@ const firebaseConfig = {
 // Initialize Firebase (Using compat script for seamless HTML integration)
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const auth = firebase.auth(); // Added auth initialization
+
+
+// ==========================================
+// 1.5 DYNAMIC AUTHENTICATION STATE & LOGOUT
+// ==========================================
+auth.onAuthStateChanged(async (user) => {
+    const authBtn = document.getElementById('authBtn');
+    const dashBtn = document.getElementById('dashBtn');
+
+    if (user) {
+        // User is LOGGED IN -> Change Nav items dynamically
+        if (authBtn) {
+            authBtn.innerHTML = '<i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i> Log Out';
+            authBtn.style.color = '#ff4d4d'; // Make it red
+            authBtn.href = "#";
+            
+            // Activate real Logout Function
+            authBtn.onclick = (e) => {
+                e.preventDefault();
+                auth.signOut().then(() => {
+                    window.location.reload(); // Refresh page to reset the navbar
+                });
+            };
+        }
+
+        // Route Dashboard button dynamically based on role in database
+        if (dashBtn) {
+            try {
+                const userDoc = await db.collection('users').doc(user.email).get();
+                if (userDoc.exists && userDoc.data().role === 'admin') {
+                    dashBtn.href = "admin.html"; // Send admins to admin panel
+                } else {
+                    dashBtn.href = "client.html"; // Send regular users to client panel
+                }
+            } catch (err) {
+                console.error("Error fetching role: ", err);
+                dashBtn.href = "client.html"; // Fallback
+            }
+        }
+    } 
+});
 
 
 // ==========================================
