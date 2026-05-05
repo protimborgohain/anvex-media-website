@@ -162,29 +162,66 @@
         <h2 class="text-center">See Our Work <span class="gradient-text">In Action</span></h2>
         <p class="text-center">Real content. Real engagement. Real results.</p>
 
-        <div class="video-marquee">
-            <div class="video-track">
+        <!-- Added ID for JavaScript manual/auto scroll control -->
+        <div class="video-marquee" id="videoMarquee">
+            <div class="video-track" id="videoTrack">
                 <!-- Original 9 Videos -->
-                <video src="https://drive.google.com/uc?export=download&id=12hvLreUOLU3Kb9l9qrtLKlfZJEEMg1Gi" autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal(this.src)"></video>
-                <video src="https://drive.google.com/uc?export=download&id=1jVzIAgnNcmJYUns0npxTCKUlsDyvNHvx" autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal(this.src)"></video>
-                <video src="https://drive.google.com/uc?export=download&id=13OFasAj1AIbNXaz6j92SHma9VQWlkXZR" autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal(this.src)"></video>
-                <video src="https://drive.google.com/uc?export=download&id=1gTuNmtcbHHDZLB4enhJ0PefSo5Is6zbl" autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal(this.src)"></video>
-                <video src="https://drive.google.com/uc?export=download&id=11ypSYpZJKISWrjqtfMSszZZqNwF1QsN-" autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal(this.src)"></video>
-                <video src="https://drive.google.com/uc?export=download&id=1j9Y2yrwUxbfGoWlaypkVDs3vHno7-QY1" autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal(this.src)"></video>
-                <video src="https://drive.google.com/uc?export=download&id=1EFo5d-GNBUoPn6ODwEEi7gK1AYppJXfT" autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal(this.src)"></video>
-                <video src="https://drive.google.com/uc?export=download&id=16-c17EOmRDBgPnSWkAmonLnFkJ27PvIH" autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal(this.src)"></video>
-                <video src="https://drive.google.com/uc?export=download&id=19Zn3HpdLVf5WGZ0u2vt5BtElxmsQ8of3" autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal(this.src)"></video>
+                <video autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal('https://drive.google.com/uc?export=download&id=12hvLreUOLU3Kb9l9qrtLKlfZJEEMg1Gi')">
+                    <source src="https://drive.google.com/uc?export=download&id=12hvLreUOLU3Kb9l9qrtLKlfZJEEMg1Gi" type="video/mp4">
+                </video>
+                <video autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal('https://drive.google.com/uc?export=download&id=1jVzIAgnNcmJYUns0npxTCKUlsDyvNHvx')">
+                    <source src="https://drive.google.com/uc?export=download&id=1jVzIAgnNcmJYUns0npxTCKUlsDyvNHvx" type="video/mp4">
+                </video>
+                <video autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal('https://drive.google.com/uc?export=download&id=13OFasAj1AIbNXaz6j92SHma9VQWlkXZR')">
+                    <source src="https://drive.google.com/uc?export=download&id=13OFasAj1AIbNXaz6j92SHma9VQWlkXZR" type="video/mp4">
+                </video>
+                <video autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal('https://drive.google.com/uc?export=download&id=1gTuNmtcbHHDZLB4enhJ0PefSo5Is6zbl')">
+                    <source src="https://drive.google.com/uc?export=download&id=1gTuNmtcbHHDZLB4enhJ0PefSo5Is6zbl" type="video/mp4">
+                </video>
+                <video autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal('https://drive.google.com/uc?export=download&id=11ypSYpZJKISWrjqtfMSszZZqNwF1QsN-')">
+                    <source src="https://drive.google.com/uc?export=download&id=11ypSYpZJKISWrjqtfMSszZZqNwF1QsN-" type="video/mp4">
+                </video>
+                <video autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal('https://drive.google.com/uc?export=download&id=1j9Y2yrwUxbfGoWlaypkVDs3vHno7-QY1')">
+                    <source src="https://drive.google.com/uc?export=download&id=1j9Y2yrwUxbfGoWlaypkVDs3vHno7-QY1" type="video/mp4">
+                </video>
+                <video autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal('https://drive.google.com/uc?export=download&id=1EFo5d-GNBUoPn6ODwEEi7gK1AYppJXfT')">
+                    <source src="https://drive.google.com/uc?export=download&id=1EFo5d-GNBUoPn6ODwEEi7gK1AYppJXfT" type="video/mp4">
+                </video>
+                <video autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal('https://drive.google.com/uc?export=download&id=16-c17EOmRDBgPnSWkAmonLnFkJ27PvIH')">
+                    <source src="https://drive.google.com/uc?export=download&id=16-c17EOmRDBgPnSWkAmonLnFkJ27PvIH" type="video/mp4">
+                </video>
+                <video autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal('https://drive.google.com/uc?export=download&id=19Zn3HpdLVf5WGZ0u2vt5BtElxmsQ8of3')">
+                    <source src="https://drive.google.com/uc?export=download&id=19Zn3HpdLVf5WGZ0u2vt5BtElxmsQ8of3" type="video/mp4">
+                </video>
 
                 <!-- Duplicated 9 Videos for Seamless Looping -->
-                <video src="https://drive.google.com/uc?export=download&id=12hvLreUOLU3Kb9l9qrtLKlfZJEEMg1Gi" autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal(this.src)"></video>
-                <video src="https://drive.google.com/uc?export=download&id=1jVzIAgnNcmJYUns0npxTCKUlsDyvNHvx" autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal(this.src)"></video>
-                <video src="https://drive.google.com/uc?export=download&id=13OFasAj1AIbNXaz6j92SHma9VQWlkXZR" autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal(this.src)"></video>
-                <video src="https://drive.google.com/uc?export=download&id=1gTuNmtcbHHDZLB4enhJ0PefSo5Is6zbl" autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal(this.src)"></video>
-                <video src="https://drive.google.com/uc?export=download&id=11ypSYpZJKISWrjqtfMSszZZqNwF1QsN-" autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal(this.src)"></video>
-                <video src="https://drive.google.com/uc?export=download&id=1j9Y2yrwUxbfGoWlaypkVDs3vHno7-QY1" autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal(this.src)"></video>
-                <video src="https://drive.google.com/uc?export=download&id=1EFo5d-GNBUoPn6ODwEEi7gK1AYppJXfT" autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal(this.src)"></video>
-                <video src="https://drive.google.com/uc?export=download&id=16-c17EOmRDBgPnSWkAmonLnFkJ27PvIH" autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal(this.src)"></video>
-                <video src="https://drive.google.com/uc?export=download&id=19Zn3HpdLVf5WGZ0u2vt5BtElxmsQ8of3" autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal(this.src)"></video>
+                <video autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal('https://drive.google.com/uc?export=download&id=12hvLreUOLU3Kb9l9qrtLKlfZJEEMg1Gi')">
+                    <source src="https://drive.google.com/uc?export=download&id=12hvLreUOLU3Kb9l9qrtLKlfZJEEMg1Gi" type="video/mp4">
+                </video>
+                <video autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal('https://drive.google.com/uc?export=download&id=1jVzIAgnNcmJYUns0npxTCKUlsDyvNHvx')">
+                    <source src="https://drive.google.com/uc?export=download&id=1jVzIAgnNcmJYUns0npxTCKUlsDyvNHvx" type="video/mp4">
+                </video>
+                <video autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal('https://drive.google.com/uc?export=download&id=13OFasAj1AIbNXaz6j92SHma9VQWlkXZR')">
+                    <source src="https://drive.google.com/uc?export=download&id=13OFasAj1AIbNXaz6j92SHma9VQWlkXZR" type="video/mp4">
+                </video>
+                <video autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal('https://drive.google.com/uc?export=download&id=1gTuNmtcbHHDZLB4enhJ0PefSo5Is6zbl')">
+                    <source src="https://drive.google.com/uc?export=download&id=1gTuNmtcbHHDZLB4enhJ0PefSo5Is6zbl" type="video/mp4">
+                </video>
+                <video autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal('https://drive.google.com/uc?export=download&id=11ypSYpZJKISWrjqtfMSszZZqNwF1QsN-')">
+                    <source src="https://drive.google.com/uc?export=download&id=11ypSYpZJKISWrjqtfMSszZZqNwF1QsN-" type="video/mp4">
+                </video>
+                <video autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal('https://drive.google.com/uc?export=download&id=1j9Y2yrwUxbfGoWlaypkVDs3vHno7-QY1')">
+                    <source src="https://drive.google.com/uc?export=download&id=1j9Y2yrwUxbfGoWlaypkVDs3vHno7-QY1" type="video/mp4">
+                </video>
+                <video autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal('https://drive.google.com/uc?export=download&id=1EFo5d-GNBUoPn6ODwEEi7gK1AYppJXfT')">
+                    <source src="https://drive.google.com/uc?export=download&id=1EFo5d-GNBUoPn6ODwEEi7gK1AYppJXfT" type="video/mp4">
+                </video>
+                <video autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal('https://drive.google.com/uc?export=download&id=16-c17EOmRDBgPnSWkAmonLnFkJ27PvIH')">
+                    <source src="https://drive.google.com/uc?export=download&id=16-c17EOmRDBgPnSWkAmonLnFkJ27PvIH" type="video/mp4">
+                </video>
+                <video autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal('https://drive.google.com/uc?export=download&id=19Zn3HpdLVf5WGZ0u2vt5BtElxmsQ8of3')">
+                    <source src="https://drive.google.com/uc?export=download&id=19Zn3HpdLVf5WGZ0u2vt5BtElxmsQ8of3" type="video/mp4">
+                </video>
             </div>
         </div>
     </section>
@@ -308,6 +345,7 @@
                 <h3>Estimated Total: <span class="gradient-text">₹<span id="calculatedPrice">0</span>/mo</span></h3>
             </div>
             
+            <!-- Button is now a standard link that closes the modal and scrolls to the contact section -->
             <a href="#contact" class="btn btn-primary" style="margin-top: 20px; width: 100%; text-align: center; display: inline-block; box-sizing: border-box;" onclick="closeModal()">Proceed with Custom Package</a>
         </div>
     </div>
