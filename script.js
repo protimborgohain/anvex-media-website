@@ -1,3 +1,24 @@
+// ==========================================
+// 1. FIREBASE INITIALIZATION
+// ==========================================
+const firebaseConfig = {
+    apiKey: "AIzaSyAxx30DLPsU_CqMqihS1HE-3kMgRxY3oio",
+    authDomain: "anvex-media.firebaseapp.com",
+    projectId: "anvex-media",
+    storageBucket: "anvex-media.firebasestorage.app",
+    messagingSenderId: "941745194100",
+    appId: "1:941745194100:web:8a6b718bb4bd54d9733d21"
+};
+
+// Initialize Firebase (Using compat script for seamless HTML integration)
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+
+// ==========================================
+// 2. UI & SCROLL ANIMATIONS
+// ==========================================
+
 // Sticky Navbar
 window.addEventListener('scroll', () => {
     const nav = document.getElementById('navbar');
@@ -48,7 +69,10 @@ function runCounters() {
     });
 }
 
-// === Modals Logic ===
+
+// ==========================================
+// 3. MODALS LOGIC
+// ==========================================
 const packageModal = document.getElementById("customPackageModal");
 const consultationModal = document.getElementById("consultationModal");
 const videoModal = document.getElementById("videoModal");
@@ -57,15 +81,12 @@ const popupVideoPlayer = document.getElementById("popupVideoPlayer");
 const checkboxes = document.querySelectorAll('.service-checkbox');
 const priceDisplay = document.getElementById('calculatedPrice');
 
-// Open/Close Custom Package Modal
 function openModal() { packageModal.style.display = "block"; }
 function closeModal() { packageModal.style.display = "none"; }
 
-// Open/Close Consultation Modal
 function openConsultationModal() { consultationModal.style.display = "block"; }
 function closeConsultationModal() { consultationModal.style.display = "none"; }
 
-// NEW: Open/Close Video Player Modal
 function openVideoModal(src) {
     videoModal.style.display = "flex"; 
     popupVideoPlayer.src = src;
@@ -78,20 +99,12 @@ function closeVideoModal() {
     popupVideoPlayer.src = ""; 
 }
 
-// Close modals if user clicks outside of the content box
 window.onclick = function(event) {
-    if (event.target == packageModal) {
-        packageModal.style.display = "none";
-    }
-    if (event.target == consultationModal) {
-        consultationModal.style.display = "none";
-    }
-    if (event.target == videoModal) {
-        closeVideoModal();
-    }
+    if (event.target == packageModal) packageModal.style.display = "none";
+    if (event.target == consultationModal) consultationModal.style.display = "none";
+    if (event.target == videoModal) closeVideoModal();
 }
 
-// Calculate custom price dynamically
 function calculateTotal() {
     let total = 0;
     checkboxes.forEach(checkbox => {
@@ -107,27 +120,64 @@ checkboxes.forEach(checkbox => {
 });
 
 
-// === WhatsApp Form Submission Logic ===
-function sendToWhatsApp(event) {
+// ==========================================
+// 4. FIREBASE DATABASE SUBMISSION
+// ==========================================
+async function sendToWhatsApp(event) {
     event.preventDefault(); 
 
+    // Grab the button to show a loading state
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    submitBtn.disabled = true;
+
+    // Get input values
     const name = document.getElementById('c_name').value;
     const business = document.getElementById('c_business').value;
     const category = document.getElementById('c_category').value;
     const location = document.getElementById('c_location').value;
     const time = document.getElementById('c_time').value;
 
-    const phoneNumber = "918011595012";
-    const message = `*New Consultation Request*%0A%0A*Name:* ${name}%0A*Business Name:* ${business}%0A*Category:* ${category}%0A*Location:* ${location}%0A*Preferred Time:* ${time}`;
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+    try {
+        // 1. SAVE TO FIREBASE "inquiries" COLLECTION
+        await db.collection("inquiries").add({
+            name: name,
+            business: business,
+            category: category,
+            location: location,
+            preferredTime: time,
+            packageType: "Consultation Request", 
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            status: "new"
+        });
 
-    window.open(whatsappUrl, '_blank');
+        console.log("Lead successfully saved to database!");
 
-    closeConsultationModal();
-    document.getElementById('consultationForm').reset();
+        // 2. OPEN WHATSAPP 
+        const phoneNumber = "918011595012";
+        const message = `*New Consultation Request*%0A%0A*Name:* ${name}%0A*Business Name:* ${business}%0A*Category:* ${category}%0A*Location:* ${location}%0A*Preferred Time:* ${time}`;
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+        window.open(whatsappUrl, '_blank');
+
+        // 3. RESET FORM
+        closeConsultationModal();
+        document.getElementById('consultationForm').reset();
+
+    } catch (error) {
+        console.error("Error saving lead: ", error);
+        alert("Oops! Something went wrong saving your request. Please try again.");
+    } finally {
+        // Restore button state
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }
 }
 
-// === Hamburger Menu Toggle Logic ===
+
+// ==========================================
+// 5. HAMBURGER MENU & VIDEO SCROLL
+// ==========================================
 function toggleMenu() {
     document.getElementById('navMenu').classList.toggle('active');
 }
@@ -143,9 +193,7 @@ window.addEventListener('click', function(e) {
     }
 });
 
-// === JavaScript Auto-Scroll for Video Marquee ===
 const marquee = document.getElementById('videoMarquee');
-
 if (marquee) {
     let isPaused = false;
     let scrollSpeed = 1; 
@@ -153,7 +201,6 @@ if (marquee) {
     function autoScroll() {
         if (!isPaused) {
             marquee.scrollLeft += scrollSpeed;
-            
             if (marquee.scrollLeft >= (marquee.scrollWidth / 2)) {
                 marquee.scrollLeft = 0;
             }
@@ -163,7 +210,6 @@ if (marquee) {
 
     marquee.addEventListener('mouseenter', () => isPaused = true);
     marquee.addEventListener('mouseleave', () => isPaused = false);
-    
     marquee.addEventListener('touchstart', () => isPaused = true);
     marquee.addEventListener('touchend', () => {
         setTimeout(() => { isPaused = false; }, 2000);
