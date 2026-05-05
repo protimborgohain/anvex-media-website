@@ -236,7 +236,9 @@
         
         <div class="nav-right" style="display: flex; align-items: center; gap: 20px;">
             <span style="font-weight: 600; color: var(--accent-blue); display: none; @media(min-width:768px){display:inline;}">Admin Portal</span>
-            <a href="index.html" class="btn btn-secondary" style="padding: 8px 20px; font-size: 0.8rem;">Logout</a>
+            
+            <!-- SECURE LOGOUT BUTTON -->
+            <a href="#" class="btn btn-secondary" style="padding: 8px 20px; font-size: 0.8rem; color: #ff4d4d; border-color: rgba(255, 77, 77, 0.3);" onclick="firebase.auth().signOut().then(() => { window.location.href='index.html'; })">Logout</a>
         </div>
     </nav>
 
@@ -397,7 +399,23 @@
     <!-- Floating Toast Notification -->
     <div id="toast">Progress Successfully Updated!</div>
 
+    <!-- FIREBASE SCRIPTS -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+
     <script>
+        // Initialize Firebase so the logout button functions
+        const firebaseConfig = {
+            apiKey: "AIzaSyAxx30DLPsU_CqMqihS1HE-3kMgRxY3oio",
+            authDomain: "anvex-media.firebaseapp.com",
+            projectId: "anvex-media",
+            storageBucket: "anvex-media.firebasestorage.app",
+            messagingSenderId: "941745194100",
+            appId: "1:941745194100:web:8a6b718bb4bd54d9733d21"
+        };
+        firebase.initializeApp(firebaseConfig);
+
         // Tab Switching Logic
         function switchTab(tabId) {
             // Remove active class from all buttons and content
