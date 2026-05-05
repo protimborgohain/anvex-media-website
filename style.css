@@ -479,21 +479,24 @@ nav.scrolled {
 /* === NEW VIDEO MARQUEE PORTFOLIO === */
 .video-marquee {
     width: 100%;
-    overflow: hidden;
+    overflow-x: auto; 
+    overflow-y: hidden;
     white-space: nowrap;
     position: relative;
     padding: 3rem 0;
     margin-top: 1rem;
+    -webkit-overflow-scrolling: touch; 
+    scrollbar-width: none; 
+}
+
+.video-marquee::-webkit-scrollbar {
+    display: none;
 }
 
 .video-track {
     display: inline-flex;
     gap: 20px;
-    animation: scrollVideos 40s linear infinite;
-}
-
-.video-track:hover {
-    animation-play-state: paused;
+    padding: 0 20px; 
 }
 
 .marquee-video {
@@ -505,18 +508,13 @@ nav.scrolled {
     transition: transform 0.3s ease, border-color 0.3s;
     border: 2px solid transparent;
     box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    flex-shrink: 0; 
 }
 
 .marquee-video:hover {
     transform: scale(1.05);
     border-color: var(--accent-blue);
     z-index: 10;
-}
-
-@keyframes scrollVideos {
-    0% { transform: translateX(0); }
-    /* Moves exactly halfway through the track to perfectly loop the duplicates */
-    100% { transform: translateX(calc(-50% - 10px)); } 
 }
 
 /* === PRICING === */
@@ -623,7 +621,6 @@ nav.scrolled {
     padding: 3rem; 
 } 
 
-/* Special styling just for the pop-up video player modal */
 .video-popup {
     display: none;
     align-items: center;
@@ -981,7 +978,6 @@ footer {
         padding: 2rem 1.5rem;
     }
     
-    /* Slightly smaller marquee videos for phones */
     .marquee-video {
         height: 280px;
         width: 157px;
