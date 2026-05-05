@@ -67,7 +67,7 @@ function closeConsultationModal() { consultationModal.style.display = "none"; }
 
 // NEW: Open/Close Video Player Modal
 function openVideoModal(src) {
-    videoModal.style.display = "flex"; // Flex centers the video in the screen
+    videoModal.style.display = "flex"; 
     popupVideoPlayer.src = src;
     popupVideoPlayer.play();
 }
@@ -75,7 +75,7 @@ function openVideoModal(src) {
 function closeVideoModal() {
     videoModal.style.display = "none";
     popupVideoPlayer.pause();
-    popupVideoPlayer.src = ""; // Clear source to stop downloading in background
+    popupVideoPlayer.src = ""; 
 }
 
 // Close modals if user clicks outside of the content box
@@ -142,3 +142,32 @@ window.addEventListener('click', function(e) {
         }
     }
 });
+
+// === JavaScript Auto-Scroll for Video Marquee ===
+const marquee = document.getElementById('videoMarquee');
+
+if (marquee) {
+    let isPaused = false;
+    let scrollSpeed = 1; 
+
+    function autoScroll() {
+        if (!isPaused) {
+            marquee.scrollLeft += scrollSpeed;
+            
+            if (marquee.scrollLeft >= (marquee.scrollWidth / 2)) {
+                marquee.scrollLeft = 0;
+            }
+        }
+        requestAnimationFrame(autoScroll);
+    }
+
+    marquee.addEventListener('mouseenter', () => isPaused = true);
+    marquee.addEventListener('mouseleave', () => isPaused = false);
+    
+    marquee.addEventListener('touchstart', () => isPaused = true);
+    marquee.addEventListener('touchend', () => {
+        setTimeout(() => { isPaused = false; }, 2000);
+    });
+
+    autoScroll();
+}
