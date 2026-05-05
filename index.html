@@ -24,8 +24,17 @@
         <a href="#" class="nav-logo">
             <img src="logo1.png" alt="Anvex Media Logo">
         </a>
-        <div style="display: flex; gap: 15px;">
-            <a href="login.html" class="btn btn-secondary" style="padding: 10px 24px; font-size: 0.9rem;">Login / Sign Up</a>
+        
+        <!-- 3-Bar Menu System -->
+        <div class="nav-right">
+            <div class="menu-toggle" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="#contact"><i class="fas fa-headset" style="margin-right: 10px;"></i> Need Help</a>
+                <a href="login.html"><i class="fas fa-chart-line" style="margin-right: 10px;"></i> Client Dashboard</a>
+                <a href="login.html"><i class="fas fa-sign-in-alt" style="margin-right: 10px;"></i> Login / Sign Up</a>
+            </div>
         </div>
     </nav>
 
@@ -210,7 +219,7 @@
         </div>
     </section>
 
-    <!-- Consultation Modal (WITH WhatsApp Logic) -->
+    <!-- Consultation Modal -->
     <div id="consultationModal" class="modal">
         <div class="modal-content glass">
             <span class="close-btn" onclick="closeConsultationModal()">&times;</span>
@@ -248,7 +257,7 @@
         </div>
     </div>
 
-    <!-- Custom Package Modal (NO WhatsApp Logic) -->
+    <!-- Custom Package Modal -->
     <div id="customPackageModal" class="modal">
         <div class="modal-content glass">
             <span class="close-btn" onclick="closeModal()">&times;</span>
@@ -277,7 +286,6 @@
                 <h3>Estimated Total: <span class="gradient-text">₹<span id="calculatedPrice">0</span>/mo</span></h3>
             </div>
             
-            <!-- Button is now a standard link that closes the modal and scrolls to the contact section -->
             <a href="#contact" class="btn btn-primary" style="margin-top: 20px; width: 100%; text-align: center; display: inline-block; box-sizing: border-box;" onclick="closeModal()">Proceed with Custom Package</a>
         </div>
     </div>
