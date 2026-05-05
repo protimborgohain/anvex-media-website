@@ -205,17 +205,17 @@ nav {
     width: 100%; 
     padding: 0.2rem 5%; 
     z-index: 1000; 
-    transition: all 0.4s ease; 
+    transition: all 0.5s ease-in-out; /* Slightly smoother/slower for the hide effect */
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
 }
 
+/* UPDATED: Nav slides up and fades out when scrolling */
 nav.scrolled { 
-    background: rgba(5, 5, 7, 0.85); 
-    backdrop-filter: blur(20px); 
-    border-bottom: 1px solid var(--glass-border); 
-    padding: 0.2rem 5%; 
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none; /* Prevents invisible clicks */
 }
 
 .nav-logo img { 
@@ -867,14 +867,13 @@ footer {
         right: 5%; 
     }
 
-    /* Fixes the mobile vertical spacing to align perfectly under the header */
     .hero {
         padding: 0 5%;
-        align-items: flex-start; /* Prevents vertical centering */
+        align-items: flex-start; 
     }
 
     .hero .container {
-        padding-top: 160px; /* Pins the content perfectly underneath the large logo */
+        padding-top: 160px; 
     }
 
     h1 { 
