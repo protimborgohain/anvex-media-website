@@ -48,7 +48,7 @@
         #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: #25d366; color: white; padding: 12px 25px; border-radius: 30px; font-weight: 600; box-shadow: 0 10px 20px rgba(37, 211, 102, 0.4); opacity: 0; transition: all 0.4s ease; z-index: 9999; }
         #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-        /* === RESPONSIVE NAVBAR STYLES === */
+        /* === BULLETPROOF RESPONSIVE NAVBAR === */
         .top-nav {
             position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; 
             background: rgba(5, 10, 20, 0.95); backdrop-filter: blur(10px); 
@@ -56,26 +56,30 @@
             display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;
         }
         
-        /* Forcing exact 33.33% widths keeps the center block perfectly in the middle */
-        .nav-left { flex: 1; display: flex; justify-content: flex-start; align-items: center; flex-basis: 33.33%; }
-        .nav-center { flex: 1; display: flex; justify-content: center; align-items: center; flex-basis: 33.33%; }
-        .nav-right { flex: 1; display: flex; justify-content: flex-end; align-items: center; flex-basis: 33.33%; }
+        .nav-left { display: flex; justify-content: flex-start; align-items: center; }
+        .nav-right { display: flex; justify-content: flex-end; align-items: center; gap: 15px; }
+        
+        /* THIS IS THE MAGIC FIX: Absolute Centering */
+        .nav-center { 
+            position: absolute; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
         
         .mobile-only { display: none !important; }
+        .desktop-only { display: flex !important; align-items: center; }
         .mobile-title-container { display: none; }
         
         @media (max-width: 900px) { 
             .progress-grid { grid-template-columns: 1fr; } 
             
-            /* Magic Layout Swapper */
             .desktop-only { display: none !important; }
-            /* Using flex instead of block keeps the icon and logo centered properly */
             .mobile-only { display: flex !important; align-items: center; justify-content: center; } 
             
-            /* Show title perfectly spaced below the header */
             .mobile-title-container { display: block; text-align: center; margin-bottom: 25px; padding-top: 5px; }
-            
-            /* Adjust padding so everything flows naturally */
             body { padding-top: 85px; } 
         }
     </style>
@@ -94,7 +98,7 @@
             <a href="index.html" class="nav-logo desktop-only">
                 <img src="logo1.png" alt="Anvex Media Logo" style="height: 45px;">
             </a>
-            <a href="index.html" class="mobile-only" style="color: var(--text-muted); text-decoration: none; font-size: 1.3rem;">
+            <a href="index.html" class="mobile-only" style="color: var(--text-muted); text-decoration: none; font-size: 1.4rem;">
                 <i class="fas fa-home"></i>
             </a>
         </div>
@@ -107,7 +111,7 @@
             </a>
         </div>
         
-        <div class="nav-right" style="gap: 20px;">
+        <div class="nav-right">
             <a href="index.html" class="desktop-only" style="color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--text-muted)'"><i class="fas fa-home"></i> Home</a>
             
             <a href="#" class="btn btn-secondary" style="padding: 8px 15px; font-size: 0.8rem; color: #ff4d4d; border-color: rgba(255, 77, 77, 0.3);" onclick="firebase.auth().signOut().then(() => { window.location.href='index.html'; })"><i class="fas fa-power-off"></i> Logout</a>
