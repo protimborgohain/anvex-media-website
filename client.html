@@ -50,7 +50,6 @@
 
         @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
         
-        /* === BULLETPROOF RESPONSIVE NAVBAR === */
         .top-nav {
             position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; 
             background: rgba(5, 10, 20, 0.95); backdrop-filter: blur(10px); 
@@ -156,10 +155,11 @@
                 <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold;">Selected Plan</p>
                 <p style="margin: 5px 0 0 0; color: white; font-weight: 600; font-size: 1.1rem;" id="chosenPlanDisplay">...</p>
             </div>
-
-            <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.6; margin-bottom: 25px;">
-                Anvex Media team will contact you soon for detailed planning and start working with your selected package...
-            </p>
+            
+            <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; border: 1px dashed var(--glass-border); margin-bottom: 25px;">
+                <h4 style="color: var(--accent-blue); margin-bottom: 5px;">Status: Awaiting Strategy Setup</h4>
+                <p style="font-size: 0.95rem; margin: 0; line-height: 1.5;">The Anvex Media team will contact you soon for detailed planning and to start working on your selected package. Your full dashboard will unlock once your campaign is active.</p>
+            </div>
 
             <a href="https://wa.me/918011595012" target="_blank" class="btn btn-primary" style="width: 100%;"><i class="fab fa-whatsapp"></i> Contact Support</a>
         </div>
@@ -293,12 +293,10 @@
             document.getElementById('pendingScreen').style.display = 'flex';
             setTimeout(() => document.getElementById('pendingScreen').classList.add('visible'), 50);
             
-            // Populate names
             document.querySelectorAll('.clientNamePending').forEach(el => {
                 el.innerText = userData.businessName || userData.fullName;
             });
 
-            // Check if they already picked a plan
             if (!userData.selectedPlan) {
                 document.getElementById('planSelectionBox').style.display = 'block';
                 document.getElementById('underReviewBox').style.display = 'none';
@@ -308,11 +306,9 @@
                 document.getElementById('chosenPlanDisplay').innerText = userData.selectedPlan;
             }
 
-            // Save email globally so the save function can access it
             window.currentUserEmail = email;
         }
 
-        // Saves plan to Firebase and visually flips to Under Review state
         async function savePlan(planName, btnElement) {
             const originalText = btnElement.innerHTML;
             btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
@@ -321,12 +317,10 @@
             allBtns.forEach(b => b.disabled = true);
             
             try {
-                // Update Firebase
                 await db.collection('users').doc(window.currentUserEmail).update({
                     selectedPlan: planName
                 });
                 
-                // Flip the UI visually
                 document.getElementById('planSelectionBox').style.display = 'none';
                 document.getElementById('underReviewBox').style.display = 'block';
                 document.getElementById('chosenPlanDisplay').innerText = planName;
