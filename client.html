@@ -20,7 +20,6 @@
         .dash-header h2 { font-size: 2.2rem; margin-bottom: 5px; }
         .dash-header p { margin: 0; font-size: 1rem; }
 
-        /* The new sleek Client Month Dropdown styling */
         .month-select { background: rgba(0, 210, 255, 0.15); border: 1px solid var(--accent-blue); color: white; padding: 10px 35px 10px 20px; border-radius: 8px; font-weight: 600; font-family: var(--font-main); outline: none; appearance: none; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2); background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); background-repeat: no-repeat; background-position: right 10px top 50%; }
         .month-select:hover { background-color: rgba(0, 210, 255, 0.25); border-color: white; }
         .month-select option { background: var(--bg-dark); color: white; }
@@ -39,7 +38,7 @@
         .tasks-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
         .task-box { padding: 2rem; }
         .task-box h3 { margin-bottom: 1.5rem; font-size: 1.3rem; display: flex; align-items: center; gap: 10px; }
-        .task-list { list-style: none; }
+        .task-list { list-style: none; padding-left: 0; }
         .task-list li { position: relative; padding-left: 30px; margin-bottom: 15px; color: #e2e8f0; line-height: 1.5; font-size: 1.05rem; }
         .task-list.completed li::before { content: '\f058'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; left: 0; top: 2px; color: #25d366; font-size: 1.2rem; }
         .task-list.pending li::before { content: '\f252'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; left: 2px; top: 2px; color: var(--accent-blue); font-size: 1.1rem; }
@@ -111,7 +110,6 @@
     </div>
 
     <div id="pendingScreen" class="dashboard-container pending-container fade-up" style="display: none;">
-        
         <div class="glass pending-card" id="planSelectionBox" style="display: none;">
             <i class="fas fa-box-open main-icon" style="color: var(--accent-blue); animation: none;"></i>
             <h2 style="margin-bottom: 10px;">Welcome, <span class="clientNamePending gradient-text">Client</span></h2>
@@ -174,8 +172,7 @@
             </div>
         </div>
 
-        <div class="plan-details-box" id="detailedPlanBox">
-            </div>
+        <div class="plan-details-box" id="detailedPlanBox"></div>
 
         <div class="metrics-grid">
             <div class="glass metric-card">
@@ -184,9 +181,7 @@
                     <h4>Reels Uploaded</h4>
                     <h2 id="reelsText">0 <span>/ 0</span></h2>
                 </div>
-                <div class="progress-bg">
-                    <div id="reelsBar" class="progress-fill"></div>
-                </div>
+                <div class="progress-bg"><div id="reelsBar" class="progress-fill"></div></div>
             </div>
             <div class="glass metric-card">
                 <div>
@@ -194,9 +189,7 @@
                     <h4>Posters Designed</h4>
                     <h2 id="postersText">0 <span>/ 0</span></h2>
                 </div>
-                <div class="progress-bg">
-                    <div id="postersBar" class="progress-fill purple"></div>
-                </div>
+                <div class="progress-bg"><div id="postersBar" class="progress-fill purple"></div></div>
             </div>
             <div class="glass metric-card">
                 <div>
@@ -261,7 +254,7 @@
 
         let maxReels = 0;
         let maxPosters = 0;
-        let clientProgressHistory = {}; // Caches all months locally
+        let clientProgressHistory = {}; 
 
         auth.onAuthStateChanged(async (user) => {
             if (!user) { window.location.replace('login.html'); return; }
@@ -370,47 +363,70 @@
                 if(maxPosters === 0) maxPosters = "-";
             } else { maxReels = 8; maxPosters = 4; }
             
-            document.getElementById('reelsText').innerHTML = `0 <span>/ ${maxReels}</span>`;
-            document.getElementById('postersText').innerHTML = `0 <span>/ ${maxPosters}</span>`;
-
-            // === FETCH ALL MONTHS FOR DROPDOWN ===
-            const snapshot = await db.collection('progress').where('clientEmail', '==', userData.email).get();
+            // === DYNAMIC MONTH GENERATOR ===
             const monthDropdown = document.getElementById('clientMonthDropdown');
             monthDropdown.innerHTML = '';
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const today = new Date();
+            let currYear = today.getFullYear();
+            let currM = today.getMonth();
 
+            if(currYear < 2026) currYear = 2026;
+
+            let latestGeneratedMonth = "";
+            for (let y = 2026; y <= currYear; y++) {
+                let endM = (y === currYear) ? currM : 11;
+                for (let m = 0; m <= endM; m++) {
+                    let mStr = `${monthNames[m]} ${y}`;
+                    let opt = document.createElement('option');
+                    opt.value = mStr;
+                    opt.text = mStr;
+                    monthDropdown.insertBefore(opt, monthDropdown.firstChild); 
+                    latestGeneratedMonth = mStr;
+                }
+            }
+
+            // Load Data
+            const snapshot = await db.collection('progress').where('clientEmail', '==', userData.email).get();
+            
             if(!snapshot.empty) {
                 let latestDoc = null; let maxTime = 0;
-                
                 snapshot.forEach(doc => {
                     const data = doc.data();
-                    clientProgressHistory[data.month] = data; // Save to local cache
-                    
-                    // Create Dropdown Option
-                    const option = document.createElement('option');
-                    option.value = data.month;
-                    option.text = data.month;
-                    monthDropdown.appendChild(option);
-
+                    clientProgressHistory[data.month] = data; 
                     const time = data.lastUpdated ? data.lastUpdated.toMillis() : 0;
                     if(time > maxTime) { maxTime = time; latestDoc = data; }
                 });
                 
-                if(!latestDoc) { latestDoc = snapshot.docs[0].data(); }
-                
-                // Select the latest month natively
-                monthDropdown.value = latestDoc.month;
-                injectDataToUI(latestDoc);
+                // Prioritize showing the actual current calendar month first, if it exists
+                if (clientProgressHistory[latestGeneratedMonth]) {
+                    monthDropdown.value = latestGeneratedMonth;
+                    injectDataToUI(clientProgressHistory[latestGeneratedMonth]);
+                } else if (latestDoc) {
+                    monthDropdown.value = latestDoc.month;
+                    injectDataToUI(latestDoc);
+                } else {
+                    monthDropdown.value = latestGeneratedMonth;
+                    loadSpecificMonth(latestGeneratedMonth);
+                }
             } else {
-                monthDropdown.innerHTML = `<option value="">Awaiting Data...</option>`;
-                document.getElementById('tasksCompletedList').innerHTML = `<li>Awaiting first progress update from your manager.</li>`;
-                document.getElementById('tasksRemainingList').innerHTML = `<li>Strategy setup in progress.</li>`;
+                monthDropdown.value = latestGeneratedMonth;
+                loadSpecificMonth(latestGeneratedMonth); // Load empty state
             }
         }
 
-        // Triggered when client clicks a different month
+        // === SMART EMPTY STATE HANDLER ===
         function loadSpecificMonth(monthName) {
             if(clientProgressHistory[monthName]) {
                 injectDataToUI(clientProgressHistory[monthName]);
+            } else {
+                // If the month hasn't been uploaded by Admin yet, show zeros and awaiting message
+                injectDataToUI({
+                    month: monthName,
+                    reels: 0, posters: 0, ads: 0, leads: 0,
+                    tasksCompleted: "Awaiting update for this month.",
+                    tasksRemaining: "Awaiting update for this month."
+                });
             }
         }
 
@@ -429,8 +445,12 @@
             const completedList = document.getElementById('tasksCompletedList');
             completedList.innerHTML = '';
             if(data.tasksCompleted) {
-                const tasks = data.tasksCompleted.split('\n').filter(t => t.trim() !== '');
-                tasks.forEach(task => { completedList.innerHTML += `<li>${task}</li>`; });
+                if (data.tasksCompleted === "Awaiting update for this month.") {
+                    completedList.innerHTML = `<li style="font-style: italic; color: var(--text-muted);"><i class="fas fa-clock" style="color: var(--text-muted);"></i> ${data.tasksCompleted}</li>`;
+                } else {
+                    const tasks = data.tasksCompleted.split('\n').filter(t => t.trim() !== '');
+                    tasks.forEach(task => { completedList.innerHTML += `<li>${task}</li>`; });
+                }
             } else {
                 completedList.innerHTML = `<li>No completed tasks listed for this period.</li>`;
             }
@@ -438,8 +458,12 @@
             const remainingList = document.getElementById('tasksRemainingList');
             remainingList.innerHTML = '';
             if(data.tasksRemaining) {
-                const tasks = data.tasksRemaining.split('\n').filter(t => t.trim() !== '');
-                tasks.forEach(task => { remainingList.innerHTML += `<li>${task}</li>`; });
+                if (data.tasksRemaining === "Awaiting update for this month.") {
+                    remainingList.innerHTML = `<li style="font-style: italic; color: var(--text-muted);"><i class="fas fa-clock" style="color: var(--text-muted);"></i> ${data.tasksRemaining}</li>`;
+                } else {
+                    const tasks = data.tasksRemaining.split('\n').filter(t => t.trim() !== '');
+                    tasks.forEach(task => { remainingList.innerHTML += `<li>${task}</li>`; });
+                }
             } else {
                 remainingList.innerHTML = `<li>No pending tasks currently listed.</li>`;
             }
