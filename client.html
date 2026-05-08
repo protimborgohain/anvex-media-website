@@ -16,7 +16,7 @@
         body { padding-top: 100px; min-height: 100vh; }
         .dashboard-container { width: 95%; max-width: 1200px; margin: 0 auto; padding-bottom: 5rem; }
         
-        .dash-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1.5rem; }
+        .dash-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1.5rem; }
         .dash-header h2 { font-size: 2.2rem; margin-bottom: 5px; }
         .dash-header p { margin: 0; font-size: 1rem; }
 
@@ -50,24 +50,10 @@
 
         @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
         
-        .top-nav {
-            position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; 
-            background: rgba(5, 10, 20, 0.95); backdrop-filter: blur(10px); 
-            border-bottom: 1px solid rgba(255,255,255,0.05); padding: 12px 5%; 
-            display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;
-        }
-        
+        .top-nav { position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; background: rgba(5, 10, 20, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 12px 5%; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
         .nav-left { flex: 1; display: flex; justify-content: flex-start; align-items: center; }
         .nav-right { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 15px; }
-        
-        .nav-center { 
-            position: absolute; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-        }
+        .nav-center { position: absolute; left: 50%; transform: translateX(-50%); display: flex; justify-content: center; align-items: center; }
         
         .mobile-only { display: none !important; }
         .desktop-only { display: flex !important; align-items: center; }
@@ -76,13 +62,18 @@
         @media (max-width: 900px) {
             .tasks-grid { grid-template-columns: 1fr; }
             .dash-header { flex-direction: column; align-items: flex-start; gap: 15px; }
-            
             .desktop-only { display: none !important; }
             .mobile-only { display: flex !important; align-items: center; justify-content: center; } 
-            
             .mobile-title-container { display: block; text-align: center; margin-bottom: 25px; padding-top: 5px; }
             body { padding-top: 85px; } 
         }
+
+        /* Active Plan Details Box */
+        .plan-details-box { background: rgba(0,210,255,0.05); border: 1px solid var(--accent-blue); padding: 20px; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .plan-details-box h3 { color: white; margin-bottom: 15px; font-size: 1.3rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .plan-features-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+        .plan-features-list li { font-size: 0.95rem; color: #e2e8f0; display: flex; align-items: center; }
+        .plan-features-list li i { color: #25d366; margin-right: 10px; font-size: 1.1rem; }
     </style>
 </head>
 <body>
@@ -95,21 +86,13 @@
 
     <nav id="navbar" class="top-nav">
         <div class="nav-left">
-            <a href="index.html" class="nav-logo desktop-only">
-                <img src="logo1.png" alt="Anvex Media Logo" style="height: 45px;">
-            </a>
-            <a href="index.html" class="mobile-only" style="color: var(--text-muted); text-decoration: none; font-size: 1.4rem;">
-                <i class="fas fa-home"></i>
-            </a>
+            <a href="index.html" class="nav-logo desktop-only"><img src="logo1.png" alt="Anvex Media Logo" style="height: 45px;"></a>
+            <a href="index.html" class="mobile-only" style="color: var(--text-muted); text-decoration: none; font-size: 1.4rem;"><i class="fas fa-home"></i></a>
         </div>
-
         <div class="nav-center">
             <h1 class="desktop-only" style="font-size: 1.3rem; margin: 0; color: white; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Client <span class="gradient-text">Portal</span></h1>
-            <a href="index.html" class="nav-logo mobile-only">
-                <img src="logo1.png" alt="Anvex Media Logo" style="height: 35px;">
-            </a>
+            <a href="index.html" class="nav-logo mobile-only"><img src="logo1.png" alt="Anvex Media Logo" style="height: 35px;"></a>
         </div>
-        
         <div class="nav-right">
             <a href="index.html" class="desktop-only" style="color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--text-muted)'"><i class="fas fa-home"></i> Home</a>
             <a href="#" class="btn btn-secondary" style="padding: 8px 15px; font-size: 0.8rem; color: #ff4d4d; border-color: rgba(255, 77, 77, 0.3);" onclick="firebase.auth().signOut().then(() => { window.location.href='index.html'; })"><i class="fas fa-power-off"></i> Logout</a>
@@ -139,9 +122,19 @@
                 <button class="btn btn-primary" style="width: 100%; text-align: left; padding: 15px; display: flex; justify-content: space-between; align-items: center;" onclick="savePlan('Growth Package - ₹7,999/mo', this)">
                     <span style="font-weight: 600;">Growth (Popular)</span> <span>₹7,999/mo <i class="fas fa-chevron-right" style="margin-left: 10px; font-size: 0.8rem;"></i></span>
                 </button>
-                <button class="btn btn-secondary" style="width: 100%; text-align: left; padding: 15px; display: flex; justify-content: space-between; align-items: center; background: transparent; border: 1px solid var(--glass-border);" onclick="savePlan('Custom Package Request', this)">
+                <button class="btn btn-secondary" style="width: 100%; text-align: left; padding: 15px; display: flex; justify-content: space-between; align-items: center; background: transparent; border: 1px solid var(--glass-border);" onclick="toggleCustomBuilder()">
                     <span style="font-weight: 600;">Build Custom Package</span> <span><i class="fas fa-tools" style="margin-left: 10px; font-size: 0.8rem;"></i></span>
                 </button>
+            </div>
+
+            <div id="customPackageBuilder" style="display:none; text-align: left; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px solid var(--accent-blue); margin-bottom: 20px;">
+                <h4 style="color: white; margin-bottom: 15px;">Select Required Services:</h4>
+                <label style="display:block; margin-bottom:10px; color: #e2e8f0; cursor: pointer;"><input type="checkbox" value="Content Creation (4 Reels/mo)" class="cp-checkbox"> Content Creation (4 Reels/mo)</label>
+                <label style="display:block; margin-bottom:10px; color: #e2e8f0; cursor: pointer;"><input type="checkbox" value="Content Creation (8 Reels/mo)" class="cp-checkbox"> Content Creation (8 Reels/mo)</label>
+                <label style="display:block; margin-bottom:10px; color: #e2e8f0; cursor: pointer;"><input type="checkbox" value="Full Profile Management" class="cp-checkbox"> Full Profile Management</label>
+                <label style="display:block; margin-bottom:10px; color: #e2e8f0; cursor: pointer;"><input type="checkbox" value="Targeted Lead Gen Ads" class="cp-checkbox"> Targeted Lead Gen Ads</label>
+                <label style="display:block; margin-bottom:20px; color: #e2e8f0; cursor: pointer;"><input type="checkbox" value="Graphic Design (Posters)" class="cp-checkbox"> Graphic Design (Posters)</label>
+                <button class="btn btn-primary" style="width: 100%; padding: 12px;" onclick="saveCustomPlan(this)">Submit Custom Request</button>
             </div>
 
             <a href="index.html#pricing" style="color: var(--accent-blue); text-decoration: none; font-size: 0.9rem; font-weight: 600;"><i class="fas fa-external-link-alt" style="margin-right: 5px;"></i> View detailed package features</a>
@@ -171,14 +164,14 @@
             <div>
                 <h2>Welcome back, <span id="clientWelcomeName" class="gradient-text">...</span></h2>
                 <p>Here is your active campaign progress and digital growth report.</p>
-                <div style="margin-top: 15px; display: inline-block; background: rgba(0, 210, 255, 0.1); border: 1px solid var(--accent-blue); padding: 6px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: white;">
-                    <i class="fas fa-crown" style="color: #ffd700; margin-right: 5px;"></i> Active Plan: <span id="activeDashboardPlanName">...</span>
-                </div>
             </div>
             <div>
                 <div class="month-badge" id="currentMonthDisplay"><i class="fas fa-calendar-alt"></i> Loading Data...</div>
             </div>
         </div>
+
+        <div class="plan-details-box" id="detailedPlanBox">
+            </div>
 
         <div class="metrics-grid">
             <div class="glass metric-card">
@@ -262,25 +255,17 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // GLOBALS TO HOLD DYNAMIC GOALS
-        let maxReels = 8;
-        let maxPosters = 4;
+        let maxReels = 0;
+        let maxPosters = 0;
 
         auth.onAuthStateChanged(async (user) => {
-            if (!user) {
-                window.location.replace('login.html'); 
-                return;
-            }
+            if (!user) { window.location.replace('login.html'); return; }
 
             try {
                 const userDoc = await db.collection('users').doc(user.email).get();
-                if (!userDoc.exists) {
-                    auth.signOut(); window.location.replace('login.html'); return;
-                }
+                if (!userDoc.exists) { auth.signOut(); window.location.replace('login.html'); return; }
                 const userData = userDoc.data();
-                if (userData.role === 'admin') {
-                    window.location.replace('admin.html'); return;
-                }
+                if (userData.role === 'admin') { window.location.replace('admin.html'); return; }
 
                 document.getElementById('loadingScreen').style.display = 'none';
 
@@ -289,10 +274,7 @@
                 } else {
                     showPendingScreen(userData, user.email);
                 }
-
-            } catch(e) {
-                console.error("Auth Error: ", e);
-            }
+            } catch(e) { console.error("Auth Error: ", e); }
         });
 
         function showPendingScreen(userData, email) {
@@ -309,10 +291,24 @@
             } else {
                 document.getElementById('planSelectionBox').style.display = 'none';
                 document.getElementById('underReviewBox').style.display = 'block';
-                document.getElementById('chosenPlanDisplay').innerText = userData.selectedPlan;
+                let displayName = userData.selectedPlan.includes("Custom Package:") ? "Custom Built Package" : userData.selectedPlan;
+                document.getElementById('chosenPlanDisplay').innerText = displayName;
             }
-
             window.currentUserEmail = email;
+        }
+
+        function toggleCustomBuilder() {
+            const builder = document.getElementById('customPackageBuilder');
+            builder.style.display = builder.style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function saveCustomPlan(btnElement) {
+            const checkboxes = document.querySelectorAll('.cp-checkbox:checked');
+            if(checkboxes.length === 0) { alert("Please select at least one service."); return; }
+            let services = [];
+            checkboxes.forEach(cb => services.push(cb.value));
+            const planName = "Custom Package: " + services.join(" | ");
+            savePlan(planName, btnElement);
         }
 
         async function savePlan(planName, btnElement) {
@@ -323,13 +319,11 @@
             allBtns.forEach(b => b.disabled = true);
             
             try {
-                await db.collection('users').doc(window.currentUserEmail).update({
-                    selectedPlan: planName
-                });
-                
+                await db.collection('users').doc(window.currentUserEmail).update({ selectedPlan: planName });
                 document.getElementById('planSelectionBox').style.display = 'none';
                 document.getElementById('underReviewBox').style.display = 'block';
-                document.getElementById('chosenPlanDisplay').innerText = planName;
+                let displayName = planName.includes("Custom Package:") ? "Custom Built Package" : planName;
+                document.getElementById('chosenPlanDisplay').innerText = displayName;
             } catch (error) {
                 console.error("Error saving plan:", error);
                 alert("Failed to save plan. Please check your connection.");
@@ -338,24 +332,49 @@
             }
         }
 
+        function getPlanFeatures(planString) {
+            if (!planString) return ["Awaiting Setup"];
+            if (planString.includes("Starter")) {
+                return ["5 Reels + 3 Posters", "Professional Reel Editing", "Trend Research", "Caption & Hashtag Strategy", "Instagram/Facebook Management", "Monthly Content Planning", "Basic Lead Generation Setup", "2 Revisions"];
+            } else if (planString.includes("Growth")) {
+                return ["8-10 Reels + 5 Posters", "Advanced Editing & Motion Graphics", "Content Strategy & Reel Concepts", "Full Social Media Management", "Lead Generation Campaigns", "Audience Targeting Optimization", "Monthly Performance Report", "Priority Support", "3 Revisions"];
+            } else if (planString.includes("Custom Package:")) {
+                return planString.replace("Custom Package: ", "").split(" | ");
+            }
+            return [planString];
+        }
+
         async function showActiveDashboard(userData) {
             document.getElementById('activeDashboard').style.display = 'block';
             setTimeout(() => document.getElementById('activeDashboard').classList.add('visible'), 50);
             document.getElementById('clientWelcomeName').innerText = userData.businessName || userData.fullName;
 
-            // === DYNAMIC LIMIT SETTER ===
-            const planName = userData.selectedPlan || 'Custom Package';
-            document.getElementById('activeDashboardPlanName').innerText = planName;
-
-            if (planName.includes('Starter')) { 
-                maxReels = 5; maxPosters = 3; 
-            } else if (planName.includes('Growth')) { 
-                maxReels = 8; maxPosters = 5; 
-            } else { 
-                maxReels = 8; maxPosters = 4; // Default for Custom
-            }
+            const planString = userData.selectedPlan || 'Custom Package';
+            const features = getPlanFeatures(planString);
             
-            // Instantly apply limits so it doesn't say 0/0 while loading
+            // Build Detailed Plan UI
+            let displayTitle = planString.includes("Custom Package:") ? "Custom Built Package" : planString.split(' - ')[0];
+            let listHtml = `<ul class="plan-features-list">`;
+            features.forEach(f => { listHtml += `<li><i class="fas fa-check-circle"></i> ${f}</li>`; });
+            listHtml += `</ul>`;
+            
+            document.getElementById('detailedPlanBox').innerHTML = `
+                <h3><i class="fas fa-crown" style="color: #ffd700; margin-right: 10px;"></i> Active Package: <span class="gradient-text">${displayTitle}</span></h3>
+                ${listHtml}
+            `;
+
+            // Setup Dynamic Goal Limits
+            if (planString.includes('Starter')) { maxReels = 5; maxPosters = 3; } 
+            else if (planString.includes('Growth')) { maxReels = 8; maxPosters = 5; } 
+            else if (planString.includes('Custom')) {
+                maxReels = 0; maxPosters = 0;
+                if(planString.includes('4 Reels')) maxReels += 4;
+                if(planString.includes('8 Reels')) maxReels += 8;
+                if(planString.includes('Posters')) maxPosters += 4; 
+                if(maxReels === 0) maxReels = "-";
+                if(maxPosters === 0) maxPosters = "-";
+            } else { maxReels = 8; maxPosters = 4; }
+            
             document.getElementById('reelsText').innerHTML = `0 <span>/ ${maxReels}</span>`;
             document.getElementById('postersText').innerHTML = `0 <span>/ ${maxPosters}</span>`;
 
@@ -381,11 +400,11 @@
             
             const reels = data.reels || 0;
             document.getElementById('reelsText').innerHTML = `${reels} <span>/ ${maxReels}</span>`;
-            setTimeout(() => { document.getElementById('reelsBar').style.width = `${Math.min((reels/maxReels)*100, 100)}%`; }, 500);
+            if (maxReels !== "-") setTimeout(() => { document.getElementById('reelsBar').style.width = `${Math.min((reels/maxReels)*100, 100)}%`; }, 500);
 
             const posters = data.posters || 0;
             document.getElementById('postersText').innerHTML = `${posters} <span>/ ${maxPosters}</span>`;
-            setTimeout(() => { document.getElementById('postersBar').style.width = `${Math.min((posters/maxPosters)*100, 100)}%`; }, 500);
+            if (maxPosters !== "-") setTimeout(() => { document.getElementById('postersBar').style.width = `${Math.min((posters/maxPosters)*100, 100)}%`; }, 500);
 
             document.getElementById('adsText').innerText = data.ads || 0;
             document.getElementById('leadsText').innerText = data.leads || 0;
