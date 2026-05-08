@@ -171,6 +171,9 @@
             <div>
                 <h2>Welcome back, <span id="clientWelcomeName" class="gradient-text">...</span></h2>
                 <p>Here is your active campaign progress and digital growth report.</p>
+                <div style="margin-top: 15px; display: inline-block; background: rgba(0, 210, 255, 0.1); border: 1px solid var(--accent-blue); padding: 6px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: white;">
+                    <i class="fas fa-crown" style="color: #ffd700; margin-right: 5px;"></i> Active Plan: <span id="activeDashboardPlanName">...</span>
+                </div>
             </div>
             <div>
                 <div class="month-badge" id="currentMonthDisplay"><i class="fas fa-calendar-alt"></i> Loading Data...</div>
@@ -182,7 +185,7 @@
                 <div>
                     <i class="fas fa-video metric-icon"></i>
                     <h4>Reels Uploaded</h4>
-                    <h2 id="reelsText">0 <span>/ 12</span></h2>
+                    <h2 id="reelsText">0 <span>/ 0</span></h2>
                 </div>
                 <div class="progress-bg">
                     <div id="reelsBar" class="progress-fill"></div>
@@ -192,7 +195,7 @@
                 <div>
                     <i class="fas fa-image metric-icon"></i>
                     <h4>Posters Designed</h4>
-                    <h2 id="postersText">0 <span>/ 4</span></h2>
+                    <h2 id="postersText">0 <span>/ 0</span></h2>
                 </div>
                 <div class="progress-bg">
                     <div id="postersBar" class="progress-fill purple"></div>
@@ -259,6 +262,10 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        // GLOBALS TO HOLD DYNAMIC GOALS
+        let maxReels = 8;
+        let maxPosters = 4;
+
         auth.onAuthStateChanged(async (user) => {
             if (!user) {
                 window.location.replace('login.html'); 
@@ -288,7 +295,6 @@
             }
         });
 
-        // === SMART PENDING SCREEN LOGIC ===
         function showPendingScreen(userData, email) {
             document.getElementById('pendingScreen').style.display = 'flex';
             setTimeout(() => document.getElementById('pendingScreen').classList.add('visible'), 50);
@@ -337,6 +343,22 @@
             setTimeout(() => document.getElementById('activeDashboard').classList.add('visible'), 50);
             document.getElementById('clientWelcomeName').innerText = userData.businessName || userData.fullName;
 
+            // === DYNAMIC LIMIT SETTER ===
+            const planName = userData.selectedPlan || 'Custom Package';
+            document.getElementById('activeDashboardPlanName').innerText = planName;
+
+            if (planName.includes('Starter')) { 
+                maxReels = 5; maxPosters = 3; 
+            } else if (planName.includes('Growth')) { 
+                maxReels = 8; maxPosters = 5; 
+            } else { 
+                maxReels = 8; maxPosters = 4; // Default for Custom
+            }
+            
+            // Instantly apply limits so it doesn't say 0/0 while loading
+            document.getElementById('reelsText').innerHTML = `0 <span>/ ${maxReels}</span>`;
+            document.getElementById('postersText').innerHTML = `0 <span>/ ${maxPosters}</span>`;
+
             const snapshot = await db.collection('progress').where('clientEmail', '==', userData.email).get();
             if(!snapshot.empty) {
                 let latestDoc = null; let maxTime = 0;
@@ -356,13 +378,14 @@
 
         function injectDataToUI(data) {
             document.getElementById('currentMonthDisplay').innerHTML = `<i class="fas fa-calendar-check"></i> ${data.month}`;
+            
             const reels = data.reels || 0;
-            document.getElementById('reelsText').innerHTML = `${reels} <span>/ 12</span>`;
-            setTimeout(() => { document.getElementById('reelsBar').style.width = `${Math.min((reels/12)*100, 100)}%`; }, 500);
+            document.getElementById('reelsText').innerHTML = `${reels} <span>/ ${maxReels}</span>`;
+            setTimeout(() => { document.getElementById('reelsBar').style.width = `${Math.min((reels/maxReels)*100, 100)}%`; }, 500);
 
             const posters = data.posters || 0;
-            document.getElementById('postersText').innerHTML = `${posters} <span>/ 4</span>`;
-            setTimeout(() => { document.getElementById('postersBar').style.width = `${Math.min((posters/4)*100, 100)}%`; }, 500);
+            document.getElementById('postersText').innerHTML = `${posters} <span>/ ${maxPosters}</span>`;
+            setTimeout(() => { document.getElementById('postersBar').style.width = `${Math.min((posters/maxPosters)*100, 100)}%`; }, 500);
 
             document.getElementById('adsText').innerText = data.ads || 0;
             document.getElementById('leadsText').innerText = data.leads || 0;
