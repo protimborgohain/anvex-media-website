@@ -127,9 +127,7 @@
                     <div class="input-group">
                         <label style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px; display: block;">Reporting Month</label>
                         <select id="monthSelect">
-                            <option value="June 2026">June 2026</option>
-                            <option value="May 2026" selected>May 2026</option>
-                            <option value="April 2026">April 2026</option>
+                            <option value="">Loading Months...</option>
                         </select>
                     </div>
                     
@@ -187,6 +185,29 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
     <script>
+        // === DYNAMIC ADMIN MONTH GENERATOR ===
+        const monthSelect = document.getElementById('monthSelect');
+        if (monthSelect) {
+            monthSelect.innerHTML = '';
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const today = new Date();
+            let currYear = today.getFullYear();
+            let currM = today.getMonth();
+
+            if(currYear < 2026) currYear = 2026;
+
+            for (let y = 2026; y <= currYear; y++) {
+                let endM = (y === currYear) ? currM : 11;
+                for (let m = 0; m <= endM; m++) {
+                    let mStr = `${monthNames[m]} ${y}`;
+                    let opt = document.createElement('option');
+                    opt.value = mStr;
+                    opt.text = mStr;
+                    monthSelect.insertBefore(opt, monthSelect.firstChild);
+                }
+            }
+        }
+
         window.history.pushState(null, "", window.location.href);
         window.onpopstate = function() { window.location.replace("index.html"); };
 
@@ -216,7 +237,6 @@
             else { fetchInquiries(); fetchClients(); }
         });
 
-        // Function to extract features consistently
         function getPlanFeatures(planString) {
             if (!planString) return ["Awaiting Setup"];
             if (planString.includes("Starter")) {
@@ -243,7 +263,6 @@
                 `;
             }
 
-            // Format details beautifully for custom strings
             let displayDetails = details;
             if(details.includes("Custom Package:")) {
                 let items = details.replace("Selected Plan: Custom Package: ", "").split(" | ");
@@ -338,7 +357,6 @@
             } catch (error) { console.error("Error loading clients: ", error); }
         }
 
-        // === MAGIC DROPDOWN LISTENER: Now displays bullet points ===
         document.getElementById('clientSelect').addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
             const plan = selectedOption.getAttribute('data-plan');
