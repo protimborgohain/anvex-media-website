@@ -25,14 +25,12 @@
             <img src="logo1.png" alt="Anvex Media Logo">
         </a>
         
-        <!-- 3-Bar Menu System -->
         <div class="nav-right">
             <div class="menu-toggle" onclick="toggleMenu()">
                 <i class="fas fa-bars"></i>
             </div>
             <div class="nav-menu" id="navMenu">
                 <a href="#contact"><i class="fas fa-headset" style="margin-right: 10px;"></i> Need Help</a>
-                <!-- DYNAMIC LOGIN/LOGOUT IDs -->
                 <a href="login.html" id="dashBtn"><i class="fas fa-chart-line" style="margin-right: 10px;"></i> Client Dashboard</a>
                 <a href="login.html" id="authBtn"><i class="fas fa-sign-in-alt" style="margin-right: 10px;"></i> Login / Sign Up</a>
             </div>
@@ -158,14 +156,12 @@
         </div>
     </section>
 
-    <!-- VIDEO MARQUEE SECTION (Cloudinary Optimization Integrated) -->
     <section class="fade-up" id="portfolio" style="padding-top: 6rem;">
         <h2 class="text-center">See Our Work <span class="gradient-text">In Action</span></h2>
         <p class="text-center">Real content. Real engagement. Real results.</p>
 
         <div class="video-marquee" id="videoMarquee">
             <div class="video-track" id="videoTrack">
-                <!-- Original 9 Videos -->
                 <video autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal('https://res.cloudinary.com/dbr2vpeqd/video/upload/q_auto,vc_auto/work2_mjb4mj.mp4')">
                     <source src="https://res.cloudinary.com/dbr2vpeqd/video/upload/c_scale,w_400,q_auto:eco,vc_auto/work2_mjb4mj.mp4" type="video/mp4">
                 </video>
@@ -194,7 +190,6 @@
                     <source src="https://res.cloudinary.com/dbr2vpeqd/video/upload/c_scale,w_400,q_auto:eco,vc_auto/v1777971482/work3_gugm3e.mp4" type="video/mp4">
                 </video>
 
-                <!-- Duplicated 9 Videos for Seamless Looping -->
                 <video autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal('https://res.cloudinary.com/dbr2vpeqd/video/upload/q_auto,vc_auto/work2_mjb4mj.mp4')">
                     <source src="https://res.cloudinary.com/dbr2vpeqd/video/upload/c_scale,w_400,q_auto:eco,vc_auto/work2_mjb4mj.mp4" type="video/mp4">
                 </video>
@@ -226,11 +221,9 @@
         </div>
     </section>
 
-    <!-- VIDEO POPUP MODAL -->
     <div id="videoModal" class="modal video-popup">
         <span class="close-btn video-close" onclick="closeVideoModal()">&times;</span>
         <div class="video-modal-content">
-            <!-- Added preload="metadata" for fast, seamless loading on click -->
             <video id="popupVideoPlayer" controls playsinline preload="metadata"></video>
         </div>
     </div>
@@ -240,29 +233,45 @@
         <p>Invest in content that pays for itself.</p>
 
         <div class="pricing-grid">
+            
             <div class="glass price-card">
-                <h3>Content Basic</h3>
-                <div class="price">₹8,000<span>/mo</span></div>
-                <ul class="price-features">
-                    <li><i class="fas fa-check-circle"></i> 8 High-Quality Reels</li>
+                <h3 style="font-size: 1.25rem;">Starter <span style="font-size: 0.9rem; font-weight: normal;">(Entry Level)</span></h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 15px;">(Best for small businesses starting online)</p>
+                
+                <div class="price">₹4,999<span>/month</span></div>
+                
+                <ul class="price-features" style="text-align: left;">
+                    <li><i class="fas fa-check-circle"></i> 5 Reels + 3 Posters</li>
+                    <li><i class="fas fa-check-circle"></i> Professional Reel Editing</li>
                     <li><i class="fas fa-check-circle"></i> Trend Research</li>
-                    <li><i class="fas fa-check-circle"></i> Pro Video Editing</li>
-                    <li><i class="fas fa-times-circle" style="color: #444;"></i> Ads & Posting Support</li>
+                    <li><i class="fas fa-check-circle"></i> Caption & Hashtag Strategy</li>
+                    <li><i class="fas fa-check-circle"></i> Instagram/Facebook Management</li>
+                    <li><i class="fas fa-check-circle"></i> Monthly Content Planning</li>
+                    <li><i class="fas fa-check-circle"></i> Basic Lead Generation Setup</li>
+                    <li><i class="fas fa-check-circle"></i> 2 Revisions</li>
                 </ul>
-                <button onclick="openConsultationModal()" class="btn btn-secondary" style="width: 100%; text-align: center;">Start Growing</button>
+                <button onclick="window.location.href='login.html'" class="btn btn-secondary" style="width: 100%; text-align: center;">Get Started</button>
             </div>
 
             <div class="glass price-card popular">
-                <div class="popular-badge">FULL TAKEOVER</div>
-                <h3>The Growth Engine</h3>
-                <div class="price">₹25,000<span>/mo</span></div>
-                <ul class="price-features">
-                    <li><i class="fas fa-check-circle"></i> Full Profile Management</li>
-                    <li><i class="fas fa-check-circle"></i> Targeted Lead Gen Ads</li>
-                    <li><i class="fas fa-check-circle"></i> 12 Premium Reels/Posts</li>
-                    <li><i class="fas fa-check-circle"></i> Priority Strategy Support</li>
+                <div class="popular-badge">MOST POPULAR</div>
+                <h3 style="font-size: 1.25rem;">Growth</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 15px;">Best for consistent growth & visibility</p>
+                
+                <div class="price">₹7,999<span>/month</span></div>
+                
+                <ul class="price-features" style="text-align: left;">
+                    <li><i class="fas fa-check-circle"></i> 8-10 Reels + 5 Posters</li>
+                    <li><i class="fas fa-check-circle"></i> Advanced Editing & Motion Graphics</li>
+                    <li><i class="fas fa-check-circle"></i> Content Strategy & Reel Concepts</li>
+                    <li><i class="fas fa-check-circle"></i> Full Social Media Management</li>
+                    <li><i class="fas fa-check-circle"></i> Lead Generation Campaigns</li>
+                    <li><i class="fas fa-check-circle"></i> Audience Targeting Optimization</li>
+                    <li><i class="fas fa-check-circle"></i> Monthly Performance Report</li>
+                    <li><i class="fas fa-check-circle"></i> Priority Support</li>
+                    <li><i class="fas fa-check-circle"></i> 3 Revisions</li>
                 </ul>
-                <button onclick="openConsultationModal()" class="btn btn-primary" style="width: 100%; text-align: center;">Scale Now</button>
+                <button onclick="window.location.href='login.html'" class="btn btn-primary" style="width: 100%; text-align: center;">Scale Now</button>
             </div>
 
             <div class="glass price-card">
@@ -276,10 +285,10 @@
                 </ul>
                 <button onclick="openModal()" class="btn btn-secondary" style="width: 100%; text-align: center;">Create Package</button>
             </div>
+            
         </div>
     </section>
 
-    <!-- Consultation Modal -->
     <div id="consultationModal" class="modal">
         <div class="modal-content glass">
             <span class="close-btn" onclick="closeConsultationModal()">&times;</span>
@@ -317,7 +326,6 @@
         </div>
     </div>
 
-    <!-- Custom Package Modal -->
     <div id="customPackageModal" class="modal">
         <div class="modal-content glass">
             <span class="close-btn" onclick="closeModal()">&times;</span>
@@ -396,7 +404,6 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    <!-- FIREBASE SCRIPTS -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
