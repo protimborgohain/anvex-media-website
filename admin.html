@@ -56,10 +56,9 @@
             display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;
         }
         
-        .nav-left { display: flex; justify-content: flex-start; align-items: center; }
-        .nav-right { display: flex; justify-content: flex-end; align-items: center; gap: 15px; }
+        .nav-left { flex: 1; display: flex; justify-content: flex-start; align-items: center; }
+        .nav-right { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 15px; }
         
-        /* THIS IS THE MAGIC FIX: Absolute Centering */
         .nav-center { 
             position: absolute; 
             left: 50%; 
@@ -93,7 +92,6 @@
     </div>
 
     <nav id="navbar" class="top-nav">
-        
         <div class="nav-left">
             <a href="index.html" class="nav-logo desktop-only">
                 <img src="logo1.png" alt="Anvex Media Logo" style="height: 45px;">
@@ -105,7 +103,6 @@
 
         <div class="nav-center">
             <h1 class="desktop-only" style="font-size: 1.3rem; margin: 0; color: white; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Admin <span class="gradient-text">Dashboard</span></h1>
-            
             <a href="index.html" class="nav-logo mobile-only">
                 <img src="logo1.png" alt="Anvex Media Logo" style="height: 35px;">
             </a>
@@ -113,7 +110,6 @@
         
         <div class="nav-right">
             <a href="index.html" class="desktop-only" style="color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--text-muted)'"><i class="fas fa-home"></i> Home</a>
-            
             <a href="#" class="btn btn-secondary" style="padding: 8px 15px; font-size: 0.8rem; color: #ff4d4d; border-color: rgba(255, 77, 77, 0.3);" onclick="firebase.auth().signOut().then(() => { window.location.href='index.html'; })"><i class="fas fa-power-off"></i> Logout</a>
         </div>
     </nav>
@@ -213,7 +209,6 @@
             window.location.replace("index.html"); 
         };
 
-        // 1. Database Initialization (WITH GITHUB SAFE API KEY)
         const firebaseConfig = {
             apiKey: atob("QUl6YVN5QXh4MzBETFBzVV9DcU1xaWhTMUhFLTNrTWdSeFkzb2lv"),
             authDomain: "anvex-media.firebaseapp.com",
@@ -226,7 +221,6 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // 2. Tab Switcher
         function switchTab(tabId) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -234,7 +228,6 @@
             document.getElementById(tabId).classList.add('active');
         }
 
-        // 3. Admin Verification
         auth.onAuthStateChanged(async (user) => {
             if (!user) {
                 window.location.replace('login.html'); 
@@ -249,7 +242,6 @@
             }
         });
 
-        // 4. Build Card HTML
         function buildCard(id, type, name, business, location, contact, details) {
             const badgeClass = type === 'user' ? 'badge-user' : 'badge-inq';
             const badgeText = type === 'user' ? 'New Client Signup' : 'Form Inquiry';
@@ -278,7 +270,6 @@
             </div>`;
         }
 
-        // 5. Intelligent Chat Router (Email vs WhatsApp)
         function openChat(contact) {
             if (contact && contact.includes('@')) {
                 window.location.href = `mailto:${contact}`;
@@ -287,7 +278,6 @@
             }
         }
 
-        // 6. Accept Logic (Moves them to Active)
         async function acceptLead(id, type, btnElement) {
             btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             try {
@@ -311,7 +301,6 @@
             }
         }
 
-        // 7. Load Real Data
         async function fetchInquiries() {
             const grid = document.getElementById('inquiryGrid');
             grid.innerHTML = ''; 
@@ -327,12 +316,15 @@
                     }
                 });
 
+                // === UPDATED LOGIC TO SHOW SELECTED PLAN ===
                 const userSnap = await db.collection('users').where('role', '==', 'client').get();
                 userSnap.forEach(doc => {
                     const data = doc.data();
                     if (data.status !== 'active') { 
                         hasData = true;
-                        grid.innerHTML += buildCard(doc.id, 'user', data.fullName, data.businessName, data.location, data.email, 'Full Dashboard Access Request');
+                        // Dynamically pull the plan they clicked, or show they haven't picked yet
+                        const requestDetails = data.selectedPlan ? `Selected Plan: ${data.selectedPlan}` : 'Awaiting Plan Selection';
+                        grid.innerHTML += buildCard(doc.id, 'user', data.fullName, data.businessName, data.location, data.email, requestDetails);
                     }
                 });
 
@@ -345,7 +337,6 @@
             }
         }
 
-        // 8. Load Accepted Clients into Dropdown
         async function fetchClients() {
             const select = document.getElementById('clientSelect');
             try {
@@ -369,7 +360,6 @@
             }
         }
 
-        // 9. Save Real Work Progress to Database
         document.getElementById('saveProgressBtn').addEventListener('click', async (e) => {
             const btn = e.currentTarget;
             const clientEmail = document.getElementById('clientSelect').value;
