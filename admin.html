@@ -48,25 +48,10 @@
         #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: #25d366; color: white; padding: 12px 25px; border-radius: 30px; font-weight: 600; box-shadow: 0 10px 20px rgba(37, 211, 102, 0.4); opacity: 0; transition: all 0.4s ease; z-index: 9999; }
         #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-        /* === BULLETPROOF RESPONSIVE NAVBAR === */
-        .top-nav {
-            position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; 
-            background: rgba(5, 10, 20, 0.95); backdrop-filter: blur(10px); 
-            border-bottom: 1px solid rgba(255,255,255,0.05); padding: 12px 5%; 
-            display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;
-        }
-        
+        .top-nav { position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; background: rgba(5, 10, 20, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 12px 5%; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
         .nav-left { flex: 1; display: flex; justify-content: flex-start; align-items: center; }
         .nav-right { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 15px; }
-        
-        .nav-center { 
-            position: absolute; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-        }
+        .nav-center { position: absolute; left: 50%; transform: translateX(-50%); display: flex; justify-content: center; align-items: center; }
         
         .mobile-only { display: none !important; }
         .desktop-only { display: flex !important; align-items: center; }
@@ -74,13 +59,15 @@
         
         @media (max-width: 900px) { 
             .progress-grid { grid-template-columns: 1fr; } 
-            
             .desktop-only { display: none !important; }
             .mobile-only { display: flex !important; align-items: center; justify-content: center; } 
-            
             .mobile-title-container { display: block; text-align: center; margin-bottom: 25px; padding-top: 5px; }
             body { padding-top: 85px; } 
         }
+
+        .plan-features-list { list-style: none; padding: 0; margin: 15px 0 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+        .plan-features-list li { font-size: 0.85rem; color: #e2e8f0; display: flex; align-items: center; }
+        .plan-features-list li i { color: #25d366; margin-right: 8px; font-size: 1rem; }
     </style>
 </head>
 <body>
@@ -93,21 +80,13 @@
 
     <nav id="navbar" class="top-nav">
         <div class="nav-left">
-            <a href="index.html" class="nav-logo desktop-only">
-                <img src="logo1.png" alt="Anvex Media Logo" style="height: 45px;">
-            </a>
-            <a href="index.html" class="mobile-only" style="color: var(--text-muted); text-decoration: none; font-size: 1.4rem;">
-                <i class="fas fa-home"></i>
-            </a>
+            <a href="index.html" class="nav-logo desktop-only"><img src="logo1.png" alt="Anvex Media Logo" style="height: 45px;"></a>
+            <a href="index.html" class="mobile-only" style="color: var(--text-muted); text-decoration: none; font-size: 1.4rem;"><i class="fas fa-home"></i></a>
         </div>
-
         <div class="nav-center">
             <h1 class="desktop-only" style="font-size: 1.3rem; margin: 0; color: white; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Admin <span class="gradient-text">Dashboard</span></h1>
-            <a href="index.html" class="nav-logo mobile-only">
-                <img src="logo1.png" alt="Anvex Media Logo" style="height: 35px;">
-            </a>
+            <a href="index.html" class="nav-logo mobile-only"><img src="logo1.png" alt="Anvex Media Logo" style="height: 35px;"></a>
         </div>
-        
         <div class="nav-right">
             <a href="index.html" class="desktop-only" style="color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--text-muted)'"><i class="fas fa-home"></i> Home</a>
             <a href="#" class="btn btn-secondary" style="padding: 8px 15px; font-size: 0.8rem; color: #ff4d4d; border-color: rgba(255, 77, 77, 0.3);" onclick="firebase.auth().signOut().then(() => { window.location.href='index.html'; })"><i class="fas fa-power-off"></i> Logout</a>
@@ -154,9 +133,9 @@
                         </select>
                     </div>
                     
-                    <div id="adminSelectedPlanBox" style="grid-column: 1 / -1; background: rgba(0,210,255,0.05); padding: 12px 15px; border: 1px dashed var(--accent-blue); border-radius: 8px; display: none; margin-top: 10px;">
-                        <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold;">Client's Active Package</p>
-                        <p id="adminSelectedPlanText" style="margin: 5px 0 0 0; color: white; font-weight: 600; font-size: 1rem;">...</p>
+                    <div id="adminSelectedPlanBox" style="grid-column: 1 / -1; background: rgba(0,210,255,0.05); padding: 20px; border: 1px dashed var(--accent-blue); border-radius: 12px; display: none; margin-top: 10px;">
+                        <p style="margin: 0 0 10px 0; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold;">Client's Active Package</p>
+                        <div id="adminSelectedPlanText">...</div>
                     </div>
                 </div>
 
@@ -231,18 +210,24 @@
         }
 
         auth.onAuthStateChanged(async (user) => {
-            if (!user) {
-                window.location.replace('login.html'); 
-                return;
-            }
+            if (!user) { window.location.replace('login.html'); return; }
             const doc = await db.collection('users').doc(user.email).get();
-            if (!doc.exists || doc.data().role !== 'admin') {
-                window.location.replace('index.html'); 
-            } else {
-                fetchInquiries();
-                fetchClients();
-            }
+            if (!doc.exists || doc.data().role !== 'admin') { window.location.replace('index.html'); } 
+            else { fetchInquiries(); fetchClients(); }
         });
+
+        // Function to extract features consistently
+        function getPlanFeatures(planString) {
+            if (!planString) return ["Awaiting Setup"];
+            if (planString.includes("Starter")) {
+                return ["5 Reels + 3 Posters", "Professional Reel Editing", "Trend Research", "Caption & Hashtag Strategy", "Instagram/Facebook Management", "Monthly Content Planning", "Basic Lead Generation Setup", "2 Revisions"];
+            } else if (planString.includes("Growth")) {
+                return ["8-10 Reels + 5 Posters", "Advanced Editing & Motion Graphics", "Content Strategy & Reel Concepts", "Full Social Media Management", "Lead Generation Campaigns", "Audience Targeting Optimization", "Monthly Performance Report", "Priority Support", "3 Revisions"];
+            } else if (planString.includes("Custom Package:")) {
+                return planString.replace("Custom Package: ", "").split(" | ");
+            }
+            return [planString];
+        }
 
         function buildCard(id, type, name, business, location, contact, details) {
             const badgeClass = type === 'user' ? 'badge-user' : 'badge-inq';
@@ -256,6 +241,13 @@
                     <button class="btn btn-secondary" style="padding: 10px; width: 50%; font-size: 0.8rem;" onclick="openChat('${contact}')"><i class="fas fa-comment-dots"></i> Chat</button>
                     <button class="btn btn-primary" style="padding: 10px; width: 50%; font-size: 0.8rem;" onclick="acceptLead('${id}', '${type}', this)"><i class="fas fa-check"></i> Accept</button>
                 `;
+            }
+
+            // Format details beautifully for custom strings
+            let displayDetails = details;
+            if(details.includes("Custom Package:")) {
+                let items = details.replace("Selected Plan: Custom Package: ", "").split(" | ");
+                displayDetails = "Selected Custom Plan: " + items.join(", ");
             }
 
             return `
@@ -272,7 +264,7 @@
                     
                     <div class="package-box">
                         <h5>Requested Details</h5>
-                        <p style="margin:0; font-size: 0.85rem; color: var(--accent-blue); font-weight: 600;">${details || 'Pending Strategy Call'}</p>
+                        <p style="margin:0; font-size: 0.85rem; color: var(--accent-blue); font-weight: 600; line-height: 1.4;">${displayDetails}</p>
                     </div>
                 </div>
                 <div style="margin-top: 15px; display: flex; gap: 10px;">
@@ -282,40 +274,27 @@
         }
 
         function openChat(contact) {
-            if (contact && contact.includes('@')) {
-                window.location.href = `mailto:${contact}`;
-            } else {
-                window.open(`https://wa.me/918011595012`, '_blank');
-            }
+            if (contact && contact.includes('@')) { window.location.href = `mailto:${contact}`; } 
+            else { window.open(`https://wa.me/918011595012`, '_blank'); }
         }
 
         async function acceptLead(id, type, btnElement) {
             btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             try {
-                if (type === 'user') {
-                    await db.collection('users').doc(id).update({ status: 'active' });
-                } else {
-                    await db.collection('inquiries').doc(id).update({ status: 'accepted' });
-                }
+                if (type === 'user') { await db.collection('users').doc(id).update({ status: 'active' }); } 
+                else { await db.collection('inquiries').doc(id).update({ status: 'accepted' }); }
                 
                 const toast = document.getElementById('toast');
                 toast.innerText = "Accepted successfully! Client moved to Work Progress.";
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 3000);
+                toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3000);
                 
-                fetchInquiries();
-                fetchClients(); 
-            } catch(e) {
-                console.error(e);
-                alert("Error accepting lead.");
-                btnElement.innerHTML = '<i class="fas fa-check"></i> Accept';
-            }
+                fetchInquiries(); fetchClients(); 
+            } catch(e) { console.error(e); alert("Error accepting lead."); btnElement.innerHTML = '<i class="fas fa-check"></i> Accept'; }
         }
 
         async function fetchInquiries() {
             const grid = document.getElementById('inquiryGrid');
-            grid.innerHTML = ''; 
-            let hasData = false;
+            grid.innerHTML = ''; let hasData = false;
 
             try {
                 const inqSnap = await db.collection('inquiries').get();
@@ -337,13 +316,8 @@
                     }
                 });
 
-                if (!hasData) {
-                    grid.innerHTML = '<p style="color: var(--text-muted); font-style: italic;"><i class="fas fa-check-circle"></i> You are all caught up! No pending inquiries or signups.</p>';
-                }
-            } catch(e) {
-                console.error(e);
-                grid.innerHTML = '<p style="color: #ff4d4d;">Error securely loading data.</p>';
-            }
+                if (!hasData) { grid.innerHTML = '<p style="color: var(--text-muted); font-style: italic;"><i class="fas fa-check-circle"></i> You are all caught up! No pending inquiries or signups.</p>'; }
+            } catch(e) { console.error(e); grid.innerHTML = '<p style="color: #ff4d4d;">Error securely loading data.</p>'; }
         }
 
         async function fetchClients() {
@@ -357,20 +331,14 @@
                     const clientData = doc.data();
                     if(clientData.status === 'active') {
                         activeCount++;
-                        // Storing the plan inside the option element dynamically
                         select.innerHTML += `<option value="${clientData.email}" data-plan="${clientData.selectedPlan || 'Custom Package'}">${clientData.businessName} (${clientData.fullName})</option>`;
                     }
                 });
-
-                if(activeCount === 0) {
-                    select.innerHTML += '<option value="" disabled>No active clients yet. Accept an inquiry first.</option>';
-                }
-            } catch (error) {
-                console.error("Error loading clients: ", error);
-            }
+                if(activeCount === 0) { select.innerHTML += '<option value="" disabled>No active clients yet. Accept an inquiry first.</option>'; }
+            } catch (error) { console.error("Error loading clients: ", error); }
         }
 
-        // === MAGIC DROPDOWN LISTENER FOR PLAN DISPLAY ===
+        // === MAGIC DROPDOWN LISTENER: Now displays bullet points ===
         document.getElementById('clientSelect').addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
             const plan = selectedOption.getAttribute('data-plan');
@@ -378,7 +346,15 @@
             
             if(plan && plan !== "null" && plan !== "") {
                 planBox.style.display = 'block';
-                document.getElementById('adminSelectedPlanText').innerText = plan;
+                
+                const features = getPlanFeatures(plan);
+                let displayTitle = plan.includes("Custom Package:") ? "Custom Built Package" : plan.split(' - ')[0];
+                
+                let listHtml = `<h4 style="color: white; font-size: 1.1rem; margin-bottom: 10px;">${displayTitle}</h4><ul class="plan-features-list">`;
+                features.forEach(f => { listHtml += `<li><i class="fas fa-check-circle"></i> ${f}</li>`; });
+                listHtml += `</ul>`;
+                
+                document.getElementById('adminSelectedPlanText').innerHTML = listHtml;
             } else {
                 planBox.style.display = 'none';
             }
@@ -412,13 +388,8 @@
                 toast.innerText = "Dashboard successfully updated!";
                 toast.classList.add('show');
                 setTimeout(() => toast.classList.remove('show'), 3000);
-            } catch (error) {
-                console.error("Error saving progress: ", error);
-                alert("Failed to push update. Check your internet connection.");
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
+            } catch (error) { console.error("Error saving progress: ", error); alert("Failed to push update. Check your internet connection."); } 
+            finally { btn.innerHTML = originalText; btn.disabled = false; }
         });
     </script>
 </body>
