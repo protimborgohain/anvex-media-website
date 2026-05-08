@@ -45,8 +45,8 @@
         .support-box i { font-size: 3rem; color: var(--accent-blue); margin-bottom: 15px; }
 
         .pending-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; }
-        .pending-card { max-width: 500px; padding: 3rem 2rem; }
-        .pending-card i { font-size: 4rem; color: var(--accent-purple); margin-bottom: 20px; animation: pulse 2s infinite; }
+        .pending-card { max-width: 500px; padding: 3rem 2rem; width: 100%; }
+        .pending-card i.main-icon { font-size: 4rem; color: var(--accent-purple); margin-bottom: 20px; animation: pulse 2s infinite; }
 
         @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
         
@@ -58,11 +58,9 @@
             display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;
         }
         
-        /* Using flex: 1 gives left and right equal width, keeping center intact */
         .nav-left { flex: 1; display: flex; justify-content: flex-start; align-items: center; }
         .nav-right { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 15px; }
         
-        /* Absolute Centering guarantees the logo/title never moves */
         .nav-center { 
             position: absolute; 
             left: 50%; 
@@ -97,7 +95,6 @@
     </div>
 
     <nav id="navbar" class="top-nav">
-        
         <div class="nav-left">
             <a href="index.html" class="nav-logo desktop-only">
                 <img src="logo1.png" alt="Anvex Media Logo" style="height: 45px;">
@@ -108,8 +105,7 @@
         </div>
 
         <div class="nav-center">
-            <h1 class="desktop-only" style="font-size: 1.3rem; margin: 0; color: white; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Client <span class="gradient-text">Dashboard</span></h1>
-            
+            <h1 class="desktop-only" style="font-size: 1.3rem; margin: 0; color: white; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Client <span class="gradient-text">Portal</span></h1>
             <a href="index.html" class="nav-logo mobile-only">
                 <img src="logo1.png" alt="Anvex Media Logo" style="height: 35px;">
             </a>
@@ -117,13 +113,12 @@
         
         <div class="nav-right">
             <a href="index.html" class="desktop-only" style="color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--text-muted)'"><i class="fas fa-home"></i> Home</a>
-            
             <a href="#" class="btn btn-secondary" style="padding: 8px 15px; font-size: 0.8rem; color: #ff4d4d; border-color: rgba(255, 77, 77, 0.3);" onclick="firebase.auth().signOut().then(() => { window.location.href='index.html'; })"><i class="fas fa-power-off"></i> Logout</a>
         </div>
     </nav>
 
     <div class="mobile-title-container">
-        <h1 style="font-size: 1.5rem; margin: 0; color: white; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Client <span class="gradient-text">Dashboard</span></h1>
+        <h1 style="font-size: 1.5rem; margin: 0; color: white; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Client <span class="gradient-text">Portal</span></h1>
     </div>
 
     <div id="loadingScreen" class="dashboard-container" style="text-align: center; padding-top: 15vh;">
@@ -132,9 +127,36 @@
     </div>
 
     <div id="pendingScreen" class="dashboard-container pending-container fade-up" style="display: none;">
-        <div class="glass pending-card">
-            <i class="fas fa-hourglass-half"></i>
-            <h2 style="margin-bottom: 10px;">Welcome, <span id="clientNamePending" class="gradient-text">Client</span></h2>
+        
+        <div class="glass pending-card" id="planSelectionBox" style="display: none;">
+            <i class="fas fa-box-open main-icon" style="color: var(--accent-blue); animation: none;"></i>
+            <h2 style="margin-bottom: 10px;">Welcome, <span class="clientNamePending gradient-text">Client</span></h2>
+            <p style="color: var(--text-muted); margin-bottom: 25px; font-size: 1.05rem;">Please choose a proper plan as per your requirement to proceed with your setup.</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px;">
+                <button class="btn btn-secondary" style="width: 100%; text-align: left; padding: 15px; display: flex; justify-content: space-between; align-items: center;" onclick="savePlan('Starter Package - ₹4,999/mo', this)">
+                    <span style="font-weight: 600;">Starter</span> <span>₹4,999/mo <i class="fas fa-chevron-right" style="margin-left: 10px; font-size: 0.8rem;"></i></span>
+                </button>
+                <button class="btn btn-primary" style="width: 100%; text-align: left; padding: 15px; display: flex; justify-content: space-between; align-items: center;" onclick="savePlan('Growth Package - ₹7,999/mo', this)">
+                    <span style="font-weight: 600;">Growth (Popular)</span> <span>₹7,999/mo <i class="fas fa-chevron-right" style="margin-left: 10px; font-size: 0.8rem;"></i></span>
+                </button>
+                <button class="btn btn-secondary" style="width: 100%; text-align: left; padding: 15px; display: flex; justify-content: space-between; align-items: center; background: transparent; border: 1px solid var(--glass-border);" onclick="savePlan('Custom Package Request', this)">
+                    <span style="font-weight: 600;">Build Custom Package</span> <span><i class="fas fa-tools" style="margin-left: 10px; font-size: 0.8rem;"></i></span>
+                </button>
+            </div>
+
+            <a href="index.html#pricing" style="color: var(--accent-blue); text-decoration: none; font-size: 0.9rem; font-weight: 600;"><i class="fas fa-external-link-alt" style="margin-right: 5px;"></i> View detailed package features</a>
+        </div>
+
+        <div class="glass pending-card" id="underReviewBox" style="display: none;">
+            <i class="fas fa-hourglass-half main-icon"></i>
+            <h2 style="margin-bottom: 10px;">Welcome, <span class="clientNamePending gradient-text">Client</span></h2>
+            
+            <div style="background: rgba(0,210,255,0.05); padding: 12px; border-radius: 8px; border: 1px solid var(--accent-blue); margin-bottom: 20px;">
+                <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold;">Selected Plan</p>
+                <p style="margin: 5px 0 0 0; color: white; font-weight: 600; font-size: 1.1rem;" id="chosenPlanDisplay">...</p>
+            </div>
+
             <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 1.1rem;">Your account is currently under review.</p>
             
             <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; border: 1px dashed var(--glass-border); margin-bottom: 25px;">
@@ -159,7 +181,6 @@
         </div>
 
         <div class="metrics-grid">
-            
             <div class="glass metric-card">
                 <div>
                     <i class="fas fa-video metric-icon"></i>
@@ -170,7 +191,6 @@
                     <div id="reelsBar" class="progress-fill"></div>
                 </div>
             </div>
-
             <div class="glass metric-card">
                 <div>
                     <i class="fas fa-image metric-icon"></i>
@@ -181,7 +201,6 @@
                     <div id="postersBar" class="progress-fill purple"></div>
                 </div>
             </div>
-
             <div class="glass metric-card">
                 <div>
                     <i class="fas fa-bullseye metric-icon"></i>
@@ -190,7 +209,6 @@
                 </div>
                 <p style="margin:0; font-size:0.85rem; color: #25d366;"><i class="fas fa-circle" style="font-size:0.6rem; margin-right:5px;"></i> Live</p>
             </div>
-
             <div class="glass metric-card">
                 <div>
                     <i class="fas fa-users metric-icon"></i>
@@ -199,11 +217,9 @@
                 </div>
                 <p style="margin:0; font-size:0.85rem; color: var(--text-muted);">From targeted campaigns</p>
             </div>
-
         </div>
 
         <div class="tasks-grid">
-            
             <div class="glass task-box">
                 <h3 style="color: #25d366;"><i class="fas fa-clipboard-check"></i> Work Completed</h3>
                 <ul id="tasksCompletedList" class="task-list completed" style="margin-bottom: 2rem;">
@@ -215,7 +231,6 @@
                     <li>Loading tasks...</li>
                 </ul>
             </div>
-
             <div style="display: flex; flex-direction: column; gap: 20px;">
                 <div class="glass support-box">
                     <i class="fab fa-whatsapp"></i>
@@ -224,7 +239,6 @@
                     <a href="https://wa.me/918011595012" target="_blank" class="btn btn-primary" style="width: 100%; padding: 12px;">Message Manager</a>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -233,13 +247,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // === SMART BACK BUTTON FIX ===
         window.history.pushState(null, "", window.location.href);
-        window.onpopstate = function() {
-            window.location.replace("index.html"); 
-        };
+        window.onpopstate = function() { window.location.replace("index.html"); };
 
-        // 1. Initialize Firebase (WITH GITHUB SAFE API KEY)
         const firebaseConfig = {
             apiKey: atob("QUl6YVN5QXh4MzBETFBzVV9DcU1xaWhTMUhFLTNrTWdSeFkzb2lv"),
             authDomain: "anvex-media.firebaseapp.com",
@@ -260,18 +270,12 @@
 
             try {
                 const userDoc = await db.collection('users').doc(user.email).get();
-                
                 if (!userDoc.exists) {
-                    auth.signOut();
-                    window.location.replace('login.html');
-                    return;
+                    auth.signOut(); window.location.replace('login.html'); return;
                 }
-
                 const userData = userDoc.data();
-
                 if (userData.role === 'admin') {
-                    window.location.replace('admin.html');
-                    return;
+                    window.location.replace('admin.html'); return;
                 }
 
                 document.getElementById('loadingScreen').style.display = 'none';
@@ -279,7 +283,7 @@
                 if (userData.status === 'active') {
                     showActiveDashboard(userData);
                 } else {
-                    showPendingScreen(userData);
+                    showPendingScreen(userData, user.email);
                 }
 
             } catch(e) {
@@ -287,35 +291,70 @@
             }
         });
 
-        function showPendingScreen(userData) {
+        // === SMART PENDING SCREEN LOGIC ===
+        function showPendingScreen(userData, email) {
             document.getElementById('pendingScreen').style.display = 'flex';
-            document.getElementById('pendingScreen').classList.add('visible');
-            document.getElementById('clientNamePending').innerText = userData.businessName || userData.fullName;
+            setTimeout(() => document.getElementById('pendingScreen').classList.add('visible'), 50);
+            
+            // Populate names
+            document.querySelectorAll('.clientNamePending').forEach(el => {
+                el.innerText = userData.businessName || userData.fullName;
+            });
+
+            // Check if they already picked a plan
+            if (!userData.selectedPlan) {
+                document.getElementById('planSelectionBox').style.display = 'block';
+                document.getElementById('underReviewBox').style.display = 'none';
+            } else {
+                document.getElementById('planSelectionBox').style.display = 'none';
+                document.getElementById('underReviewBox').style.display = 'block';
+                document.getElementById('chosenPlanDisplay').innerText = userData.selectedPlan;
+            }
+
+            // Save email globally so the save function can access it
+            window.currentUserEmail = email;
+        }
+
+        // Saves plan to Firebase and visually flips to Under Review state
+        async function savePlan(planName, btnElement) {
+            const originalText = btnElement.innerHTML;
+            btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            
+            const allBtns = document.querySelectorAll('#planSelectionBox button');
+            allBtns.forEach(b => b.disabled = true);
+            
+            try {
+                // Update Firebase
+                await db.collection('users').doc(window.currentUserEmail).update({
+                    selectedPlan: planName
+                });
+                
+                // Flip the UI visually
+                document.getElementById('planSelectionBox').style.display = 'none';
+                document.getElementById('underReviewBox').style.display = 'block';
+                document.getElementById('chosenPlanDisplay').innerText = planName;
+            } catch (error) {
+                console.error("Error saving plan:", error);
+                alert("Failed to save plan. Please check your connection.");
+                btnElement.innerHTML = originalText;
+                allBtns.forEach(b => b.disabled = false);
+            }
         }
 
         async function showActiveDashboard(userData) {
             document.getElementById('activeDashboard').style.display = 'block';
             setTimeout(() => document.getElementById('activeDashboard').classList.add('visible'), 50);
-            
             document.getElementById('clientWelcomeName').innerText = userData.businessName || userData.fullName;
 
             const snapshot = await db.collection('progress').where('clientEmail', '==', userData.email).get();
-            
             if(!snapshot.empty) {
-                let latestDoc = null;
-                let maxTime = 0;
-                
+                let latestDoc = null; let maxTime = 0;
                 snapshot.forEach(doc => {
                     const data = doc.data();
                     const time = data.lastUpdated ? data.lastUpdated.toMillis() : 0;
-                    if(time > maxTime) {
-                        maxTime = time;
-                        latestDoc = data;
-                    }
+                    if(time > maxTime) { maxTime = time; latestDoc = data; }
                 });
-                
                 if(!latestDoc) { latestDoc = snapshot.docs[0].data(); }
-                
                 injectDataToUI(latestDoc);
             } else {
                 document.getElementById('currentMonthDisplay').innerHTML = `<i class="fas fa-tools"></i> Preparing Dashboard...`;
@@ -326,7 +365,6 @@
 
         function injectDataToUI(data) {
             document.getElementById('currentMonthDisplay').innerHTML = `<i class="fas fa-calendar-check"></i> ${data.month}`;
-            
             const reels = data.reels || 0;
             document.getElementById('reelsText').innerHTML = `${reels} <span>/ 12</span>`;
             setTimeout(() => { document.getElementById('reelsBar').style.width = `${Math.min((reels/12)*100, 100)}%`; }, 500);
