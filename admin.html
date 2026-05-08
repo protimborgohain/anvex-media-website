@@ -92,6 +92,7 @@
     </div>
 
     <nav id="navbar" class="top-nav">
+        
         <div class="nav-left">
             <a href="index.html" class="nav-logo desktop-only">
                 <img src="logo1.png" alt="Anvex Media Logo" style="height: 45px;">
@@ -203,8 +204,11 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
     <script>
+        // === SMART BACK BUTTON FIX ===
         window.history.pushState(null, "", window.location.href);
-        window.onpopstate = function() { window.location.replace("index.html"); };
+        window.onpopstate = function() {
+            window.location.replace("index.html"); 
+        };
 
         const firebaseConfig = {
             apiKey: atob("QUl6YVN5QXh4MzBETFBzVV9DcU1xaWhTMUhFLTNrTWdSeFkzb2lv"),
@@ -239,17 +243,17 @@
             }
         });
 
-        // === UPDATED BUILDCARD TO HIDE ACCEPT BUTTON CONDITIONAL ===
-        function buildCard(id, type, name, business, location, contact, details, hideAccept = false) {
+        // === SMART BUTTON RENDERER LOGIC ===
+        function buildCard(id, type, name, business, location, contact, details) {
             const badgeClass = type === 'user' ? 'badge-user' : 'badge-inq';
             const badgeText = type === 'user' ? 'New Client Signup' : 'Form Inquiry';
             
-            // Dynamic Buttons Based on 'hideAccept'
-            let buttonLayout = '';
-            if (hideAccept) {
-                buttonLayout = `<button class="btn btn-secondary" style="padding: 10px; width: 100%; font-size: 0.8rem;" onclick="openChat('${contact}')"><i class="fas fa-comment-dots"></i> Chat / Follow Up</button>`;
+            // If they are a new user and haven't selected a plan, hide the Accept button
+            let buttonsHtml = '';
+            if (type === 'user' && details === 'Awaiting Plan Selection') {
+                buttonsHtml = `<button class="btn btn-secondary" style="padding: 10px; width: 100%; font-size: 0.8rem;" onclick="openChat('${contact}')"><i class="fas fa-comment-dots"></i> Chat</button>`;
             } else {
-                buttonLayout = `
+                buttonsHtml = `
                     <button class="btn btn-secondary" style="padding: 10px; width: 50%; font-size: 0.8rem;" onclick="openChat('${contact}')"><i class="fas fa-comment-dots"></i> Chat</button>
                     <button class="btn btn-primary" style="padding: 10px; width: 50%; font-size: 0.8rem;" onclick="acceptLead('${id}', '${type}', this)"><i class="fas fa-check"></i> Accept</button>
                 `;
@@ -273,7 +277,7 @@
                     </div>
                 </div>
                 <div style="margin-top: 15px; display: flex; gap: 10px;">
-                    ${buttonLayout}
+                    ${buttonsHtml}
                 </div>
             </div>`;
         }
@@ -315,28 +319,22 @@
             let hasData = false;
 
             try {
-                // Load Form Inquiries (Always show Accept button)
                 const inqSnap = await db.collection('inquiries').get();
                 inqSnap.forEach(doc => {
                     const data = doc.data();
                     if (data.status === 'new') {
                         hasData = true;
-                        grid.innerHTML += buildCard(doc.id, 'inquiry', data.name, data.business, data.location, data.preferredTime, data.packageType, false);
+                        grid.innerHTML += buildCard(doc.id, 'inquiry', data.name, data.business, data.location, data.preferredTime, data.packageType);
                     }
                 });
 
-                // Load New Client Signups
-                const userSnap = await db.collection('users').where('role', '==', 'client').get();
+                const userSnap = await db.collection('users').where('role', 'client').get();
                 userSnap.forEach(doc => {
                     const data = doc.data();
                     if (data.status !== 'active') { 
                         hasData = true;
-                        
-                        // Check if they selected a plan yet to hide/show the Accept button
-                        const hasSelectedPlan = !!data.selectedPlan;
-                        const requestDetails = hasSelectedPlan ? `Selected Plan: ${data.selectedPlan}` : 'Awaiting Plan Selection';
-                        
-                        grid.innerHTML += buildCard(doc.id, 'user', data.fullName, data.businessName, data.location, data.email, requestDetails, !hasSelectedPlan);
+                        const requestDetails = data.selectedPlan ? `Selected Plan: ${data.selectedPlan}` : 'Awaiting Plan Selection';
+                        grid.innerHTML += buildCard(doc.id, 'user', data.fullName, data.businessName, data.location, data.email, requestDetails);
                     }
                 });
 
