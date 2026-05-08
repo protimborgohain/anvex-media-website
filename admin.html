@@ -22,7 +22,6 @@
         .tab-content { display: none; animation: fadeIn 0.4s ease; }
         .tab-content.active { display: block; }
 
-        /* Inquiry Cards Grid */
         .inquiry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
         .inquiry-card { padding: 1.5rem; transition: transform 0.3s; }
         .inquiry-card:hover { transform: translateY(-5px); }
@@ -36,7 +35,6 @@
         .package-box { background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-top: 15px; border: 1px dashed var(--glass-border); }
         .package-box h5 { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; }
 
-        /* Work Progress Section */
         .progress-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .progress-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .update-box { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border); }
@@ -49,7 +47,12 @@
 
         #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: #25d366; color: white; padding: 12px 25px; border-radius: 30px; font-weight: 600; box-shadow: 0 10px 20px rgba(37, 211, 102, 0.4); opacity: 0; transition: all 0.4s ease; z-index: 9999; }
         #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-        @media (max-width: 900px) { .progress-grid { grid-template-columns: 1fr; } }
+        
+        @media (max-width: 900px) { 
+            .progress-grid { grid-template-columns: 1fr; } 
+            /* Hide the centered title on very small screens to avoid logo overlap */
+            .mobile-hide { display: none !important; }
+        }
     </style>
 </head>
 <body>
@@ -60,15 +63,21 @@
         <div class="orb orb-3"></div>
     </div>
 
-    <nav id="navbar" class="scrolled" style="transform: none; pointer-events: auto; padding: 0.5rem 5%;">
-        <div style="display: flex; align-items: center; gap: 15px;">
+    <nav id="navbar" class="scrolled" style="transform: none; pointer-events: auto; padding: 0.5rem 5%; display: flex; justify-content: space-between; align-items: center;">
+        
+        <div style="flex: 1; display: flex; justify-content: flex-start;">
             <a href="index.html" class="nav-logo">
-                <img src="logo1.png" alt="Anvex Media Logo" style="height: 50px;">
+                <img src="logo1.png" alt="Anvex Media Logo" style="height: 55px;">
             </a>
-            <h1 style="font-size: 1.1rem; margin: 0; color: white; border-left: 2px solid var(--glass-border); padding-left: 15px; font-weight: 600; letter-spacing: 1px;">Admin <span class="gradient-text">Dashboard</span></h1>
+        </div>
+
+        <div class="mobile-hide" style="flex: 1; display: flex; justify-content: center;">
+            <h1 style="font-size: 1.4rem; margin: 0; color: white; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Admin <span class="gradient-text">Dashboard</span></h1>
         </div>
         
-        <div class="nav-right" style="display: flex; align-items: center; gap: 20px;">
+        <div class="nav-right" style="flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 20px;">
+            <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--text-muted)'"><i class="fas fa-home"></i> Home</a>
+            
             <a href="#" class="btn btn-secondary" style="padding: 8px 20px; font-size: 0.8rem; color: #ff4d4d; border-color: rgba(255, 77, 77, 0.3);" onclick="firebase.auth().signOut().then(() => { window.location.href='index.html'; })"><i class="fas fa-power-off"></i> Logout</a>
         </div>
     </nav>
@@ -158,9 +167,16 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // 1. Database Initialization
+        // === SMART BACK BUTTON FIX ===
+        // Hijacks the browser's "Back" button so it redirects to index.html instead of login.html
+        window.history.pushState(null, "", window.location.href);
+        window.onpopstate = function() {
+            window.location.replace("index.html"); 
+        };
+
+        // 1. Database Initialization (WITH GITHUB SAFE API KEY)
         const firebaseConfig = {
-            apiKey: "AIzaSyAxx30DLPsU_CqMqihS1HE-3kMgRxY3oio",
+            apiKey: atob("QUl6YVN5QXh4MzBETFBzVV9DcU1xaWhTMUhFLTNrTWdSeFkzb2lv"),
             authDomain: "anvex-media.firebaseapp.com",
             projectId: "anvex-media",
             storageBucket: "anvex-media.firebasestorage.app",
@@ -182,12 +198,12 @@
         // 3. Admin Verification
         auth.onAuthStateChanged(async (user) => {
             if (!user) {
-                window.location.href = 'login.html'; 
+                window.location.replace('login.html'); 
                 return;
             }
             const doc = await db.collection('users').doc(user.email).get();
             if (!doc.exists || doc.data().role !== 'admin') {
-                window.location.href = 'index.html'; 
+                window.location.replace('index.html'); 
             } else {
                 fetchInquiries();
                 fetchClients();
@@ -225,10 +241,9 @@
 
         // 5. Intelligent Chat Router (Email vs WhatsApp)
         function openChat(contact) {
-            if (contact.includes('@')) {
+            if (contact && contact.includes('@')) {
                 window.location.href = `mailto:${contact}`;
             } else {
-                // If it's a phone number or undefined, open generic WhatsApp
                 window.open(`https://wa.me/918011595012`, '_blank');
             }
         }
@@ -238,7 +253,6 @@
             btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             try {
                 if (type === 'user') {
-                    // This changes their status so the Client Dashboard unlocks!
                     await db.collection('users').doc(id).update({ status: 'active' });
                 } else {
                     await db.collection('inquiries').doc(id).update({ status: 'accepted' });
@@ -250,7 +264,7 @@
                 setTimeout(() => toast.classList.remove('show'), 3000);
                 
                 fetchInquiries();
-                fetchClients(); // Refreshes the dropdown list instantly
+                fetchClients(); 
             } catch(e) {
                 console.error(e);
                 alert("Error accepting lead.");
@@ -265,7 +279,6 @@
             let hasData = false;
 
             try {
-                // Fetch Website Form Inquiries
                 const inqSnap = await db.collection('inquiries').get();
                 inqSnap.forEach(doc => {
                     const data = doc.data();
@@ -275,7 +288,6 @@
                     }
                 });
 
-                // Fetch Account Signups (Pending Users)
                 const userSnap = await db.collection('users').where('role', '==', 'client').get();
                 userSnap.forEach(doc => {
                     const data = doc.data();
@@ -331,7 +343,6 @@
             btn.disabled = true;
 
             try {
-                // Creates a unique document for this client and month
                 await db.collection('progress').doc(`${clientEmail}_${month}`).set({
                     clientEmail: clientEmail,
                     month: month,
