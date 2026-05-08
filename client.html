@@ -50,21 +50,41 @@
 
         @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
         
-        /* MOBILE VIEW OVERRIDES ONLY */
+        /* === BULLETPROOF RESPONSIVE NAVBAR === */
+        .top-nav {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; 
+            background: rgba(5, 10, 20, 0.95); backdrop-filter: blur(10px); 
+            border-bottom: 1px solid rgba(255,255,255,0.05); padding: 12px 5%; 
+            display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;
+        }
+        
+        /* Using flex: 1 gives left and right equal width, keeping center intact */
+        .nav-left { flex: 1; display: flex; justify-content: flex-start; align-items: center; }
+        .nav-right { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 15px; }
+        
+        /* Absolute Centering guarantees the logo/title never moves */
+        .nav-center { 
+            position: absolute; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        
+        .mobile-only { display: none !important; }
+        .desktop-only { display: flex !important; align-items: center; }
+        .mobile-title-container { display: none; }
+        
         @media (max-width: 900px) {
-            body { padding-top: 130px; } /* Extra padding for taller mobile nav */
             .tasks-grid { grid-template-columns: 1fr; }
             .dash-header { flex-direction: column; align-items: flex-start; gap: 15px; }
             
-            /* Navbar Mobile Stack */
-            .nav-left, .nav-right { flex: auto !important; }
-            .dash-title { 
-                flex: 0 0 100% !important; /* Force to full width */
-                order: 3; /* Push below logo and buttons */
-                margin-top: 12px;
-                padding-top: 12px;
-                border-top: 1px solid rgba(255, 255, 255, 0.05);
-            }
+            .desktop-only { display: none !important; }
+            .mobile-only { display: flex !important; align-items: center; justify-content: center; } 
+            
+            .mobile-title-container { display: block; text-align: center; margin-bottom: 25px; padding-top: 5px; }
+            body { padding-top: 85px; } 
         }
     </style>
 </head>
@@ -76,24 +96,35 @@
         <div class="orb orb-3"></div>
     </div>
 
-    <nav id="navbar" style="position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; background: rgba(5, 10, 20, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 12px 5%; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; flex-wrap: wrap;">
+    <nav id="navbar" class="top-nav">
         
-        <div class="nav-left" style="flex: 1; display: flex; justify-content: flex-start;">
-            <a href="index.html" class="nav-logo">
+        <div class="nav-left">
+            <a href="index.html" class="nav-logo desktop-only">
                 <img src="logo1.png" alt="Anvex Media Logo" style="height: 45px;">
+            </a>
+            <a href="index.html" class="mobile-only" style="color: var(--text-muted); text-decoration: none; font-size: 1.4rem;">
+                <i class="fas fa-home"></i>
             </a>
         </div>
 
-        <div class="dash-title" style="flex: 1; display: flex; justify-content: center;">
-            <h1 style="font-size: 1.3rem; margin: 0; color: white; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Client <span class="gradient-text">Portal</span></h1>
+        <div class="nav-center">
+            <h1 class="desktop-only" style="font-size: 1.3rem; margin: 0; color: white; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Client <span class="gradient-text">Dashboard</span></h1>
+            
+            <a href="index.html" class="nav-logo mobile-only">
+                <img src="logo1.png" alt="Anvex Media Logo" style="height: 35px;">
+            </a>
         </div>
         
-        <div class="nav-right" style="flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 20px;">
-            <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--text-muted)'"><i class="fas fa-home"></i> Home</a>
+        <div class="nav-right">
+            <a href="index.html" class="desktop-only" style="color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: 0.3s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--text-muted)'"><i class="fas fa-home"></i> Home</a>
             
-            <a href="#" class="btn btn-secondary" style="padding: 8px 20px; font-size: 0.8rem; color: #ff4d4d; border-color: rgba(255, 77, 77, 0.3);" onclick="firebase.auth().signOut().then(() => { window.location.href='index.html'; })"><i class="fas fa-power-off"></i> Logout</a>
+            <a href="#" class="btn btn-secondary" style="padding: 8px 15px; font-size: 0.8rem; color: #ff4d4d; border-color: rgba(255, 77, 77, 0.3);" onclick="firebase.auth().signOut().then(() => { window.location.href='index.html'; })"><i class="fas fa-power-off"></i> Logout</a>
         </div>
     </nav>
+
+    <div class="mobile-title-container">
+        <h1 style="font-size: 1.5rem; margin: 0; color: white; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Client <span class="gradient-text">Dashboard</span></h1>
+    </div>
 
     <div id="loadingScreen" class="dashboard-container" style="text-align: center; padding-top: 15vh;">
         <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--accent-blue); margin-bottom: 20px;"></i>
