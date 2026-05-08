@@ -50,10 +50,21 @@
 
         @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
         
+        /* MOBILE VIEW OVERRIDES ONLY */
         @media (max-width: 900px) {
+            body { padding-top: 130px; } /* Extra padding for taller mobile nav */
             .tasks-grid { grid-template-columns: 1fr; }
             .dash-header { flex-direction: column; align-items: flex-start; gap: 15px; }
-            .mobile-hide { display: none !important; }
+            
+            /* Navbar Mobile Stack */
+            .nav-left, .nav-right { flex: auto !important; }
+            .dash-title { 
+                flex: 0 0 100% !important; /* Force to full width */
+                order: 3; /* Push below logo and buttons */
+                margin-top: 12px;
+                padding-top: 12px;
+                border-top: 1px solid rgba(255, 255, 255, 0.05);
+            }
         }
     </style>
 </head>
@@ -65,16 +76,16 @@
         <div class="orb orb-3"></div>
     </div>
 
-    <nav id="navbar" style="position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; background: rgba(5, 10, 20, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 12px 5%; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;">
+    <nav id="navbar" style="position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; background: rgba(5, 10, 20, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 12px 5%; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; flex-wrap: wrap;">
         
-        <div style="flex: 1; display: flex; justify-content: flex-start;">
+        <div class="nav-left" style="flex: 1; display: flex; justify-content: flex-start;">
             <a href="index.html" class="nav-logo">
                 <img src="logo1.png" alt="Anvex Media Logo" style="height: 45px;">
             </a>
         </div>
 
-        <div class="mobile-hide" style="flex: 1; display: flex; justify-content: center;">
-            <h1 style="font-size: 1.3rem; margin: 0; color: white; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Client <span class="gradient-text">Dashboard</span></h1>
+        <div class="dash-title" style="flex: 1; display: flex; justify-content: center;">
+            <h1 style="font-size: 1.3rem; margin: 0; color: white; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Client <span class="gradient-text">Portal</span></h1>
         </div>
         
         <div class="nav-right" style="flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 20px;">
@@ -197,7 +208,7 @@
             window.location.replace("index.html"); 
         };
 
-        // 1. Initialize Firebase
+        // 1. Initialize Firebase (WITH GITHUB SAFE API KEY)
         const firebaseConfig = {
             apiKey: atob("QUl6YVN5QXh4MzBETFBzVV9DcU1xaWhTMUhFLTNrTWdSeFkzb2lv"),
             authDomain: "anvex-media.firebaseapp.com",
