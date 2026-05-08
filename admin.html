@@ -92,7 +92,6 @@
     </div>
 
     <nav id="navbar" class="top-nav">
-        
         <div class="nav-left">
             <a href="index.html" class="nav-logo desktop-only">
                 <img src="logo1.png" alt="Anvex Media Logo" style="height: 45px;">
@@ -210,6 +209,7 @@
             window.location.replace("index.html"); 
         };
 
+        // 1. Database Initialization (WITH GITHUB SAFE API KEY)
         const firebaseConfig = {
             apiKey: atob("QUl6YVN5QXh4MzBETFBzVV9DcU1xaWhTMUhFLTNrTWdSeFkzb2lv"),
             authDomain: "anvex-media.firebaseapp.com",
@@ -222,6 +222,7 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        // 2. Tab Switcher
         function switchTab(tabId) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -229,6 +230,7 @@
             document.getElementById(tabId).classList.add('active');
         }
 
+        // 3. Admin Verification
         auth.onAuthStateChanged(async (user) => {
             if (!user) {
                 window.location.replace('login.html'); 
@@ -243,7 +245,7 @@
             }
         });
 
-        // === SMART BUTTON RENDERER LOGIC ===
+        // 4. Build Card HTML
         function buildCard(id, type, name, business, location, contact, details) {
             const badgeClass = type === 'user' ? 'badge-user' : 'badge-inq';
             const badgeText = type === 'user' ? 'New Client Signup' : 'Form Inquiry';
@@ -282,6 +284,7 @@
             </div>`;
         }
 
+        // 5. Intelligent Chat Router (Email vs WhatsApp)
         function openChat(contact) {
             if (contact && contact.includes('@')) {
                 window.location.href = `mailto:${contact}`;
@@ -290,6 +293,7 @@
             }
         }
 
+        // 6. Accept Logic (Moves them to Active)
         async function acceptLead(id, type, btnElement) {
             btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             try {
@@ -313,6 +317,7 @@
             }
         }
 
+        // 7. Load Real Data
         async function fetchInquiries() {
             const grid = document.getElementById('inquiryGrid');
             grid.innerHTML = ''; 
@@ -328,7 +333,8 @@
                     }
                 });
 
-                const userSnap = await db.collection('users').where('role', 'client').get();
+                // === THIS IS THE FIX: Added the missing "==" operator here ===
+                const userSnap = await db.collection('users').where('role', '==', 'client').get();
                 userSnap.forEach(doc => {
                     const data = doc.data();
                     if (data.status !== 'active') { 
@@ -347,6 +353,7 @@
             }
         }
 
+        // 8. Load Accepted Clients into Dropdown
         async function fetchClients() {
             const select = document.getElementById('clientSelect');
             try {
@@ -370,6 +377,7 @@
             }
         }
 
+        // 9. Save Real Work Progress to Database
         document.getElementById('saveProgressBtn').addEventListener('click', async (e) => {
             const btn = e.currentTarget;
             const clientEmail = document.getElementById('clientSelect').value;
