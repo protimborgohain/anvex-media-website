@@ -20,7 +20,10 @@
         .dash-header h2 { font-size: 2.2rem; margin-bottom: 5px; }
         .dash-header p { margin: 0; font-size: 1rem; }
 
-        .month-badge { background: rgba(0, 210, 255, 0.1); border: 1px solid var(--accent-blue); color: white; padding: 10px 20px; border-radius: 8px; font-weight: 600; }
+        /* The new sleek Client Month Dropdown styling */
+        .month-select { background: rgba(0, 210, 255, 0.15); border: 1px solid var(--accent-blue); color: white; padding: 10px 35px 10px 20px; border-radius: 8px; font-weight: 600; font-family: var(--font-main); outline: none; appearance: none; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2); background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); background-repeat: no-repeat; background-position: right 10px top 50%; }
+        .month-select:hover { background-color: rgba(0, 210, 255, 0.25); border-color: white; }
+        .month-select option { background: var(--bg-dark); color: white; }
 
         .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 2rem; }
         .metric-card { padding: 1.8rem; display: flex; flex-direction: column; justify-content: space-between; }
@@ -68,7 +71,6 @@
             body { padding-top: 85px; } 
         }
 
-        /* Active Plan Details Box */
         .plan-details-box { background: rgba(0,210,255,0.05); border: 1px solid var(--accent-blue); padding: 20px; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         .plan-details-box h3 { color: white; margin-bottom: 15px; font-size: 1.3rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
         .plan-features-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
@@ -166,7 +168,9 @@
                 <p>Here is your active campaign progress and digital growth report.</p>
             </div>
             <div>
-                <div class="month-badge" id="currentMonthDisplay"><i class="fas fa-calendar-alt"></i> Loading Data...</div>
+                <select class="month-select" id="clientMonthDropdown" onchange="loadSpecificMonth(this.value)">
+                    <option value="">Loading Data...</option>
+                </select>
             </div>
         </div>
 
@@ -257,6 +261,7 @@
 
         let maxReels = 0;
         let maxPosters = 0;
+        let clientProgressHistory = {}; // Caches all months locally
 
         auth.onAuthStateChanged(async (user) => {
             if (!user) { window.location.replace('login.html'); return; }
@@ -281,9 +286,7 @@
             document.getElementById('pendingScreen').style.display = 'flex';
             setTimeout(() => document.getElementById('pendingScreen').classList.add('visible'), 50);
             
-            document.querySelectorAll('.clientNamePending').forEach(el => {
-                el.innerText = userData.businessName || userData.fullName;
-            });
+            document.querySelectorAll('.clientNamePending').forEach(el => { el.innerText = userData.businessName || userData.fullName; });
 
             if (!userData.selectedPlan) {
                 document.getElementById('planSelectionBox').style.display = 'block';
@@ -314,7 +317,6 @@
         async function savePlan(planName, btnElement) {
             const originalText = btnElement.innerHTML;
             btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-            
             const allBtns = document.querySelectorAll('#planSelectionBox button');
             allBtns.forEach(b => b.disabled = true);
             
@@ -325,7 +327,6 @@
                 let displayName = planName.includes("Custom Package:") ? "Custom Built Package" : planName;
                 document.getElementById('chosenPlanDisplay').innerText = displayName;
             } catch (error) {
-                console.error("Error saving plan:", error);
                 alert("Failed to save plan. Please check your connection.");
                 btnElement.innerHTML = originalText;
                 allBtns.forEach(b => b.disabled = false);
@@ -352,18 +353,12 @@
             const planString = userData.selectedPlan || 'Custom Package';
             const features = getPlanFeatures(planString);
             
-            // Build Detailed Plan UI
             let displayTitle = planString.includes("Custom Package:") ? "Custom Built Package" : planString.split(' - ')[0];
             let listHtml = `<ul class="plan-features-list">`;
             features.forEach(f => { listHtml += `<li><i class="fas fa-check-circle"></i> ${f}</li>`; });
             listHtml += `</ul>`;
-            
-            document.getElementById('detailedPlanBox').innerHTML = `
-                <h3><i class="fas fa-crown" style="color: #ffd700; margin-right: 10px;"></i> Active Package: <span class="gradient-text">${displayTitle}</span></h3>
-                ${listHtml}
-            `;
+            document.getElementById('detailedPlanBox').innerHTML = `<h3><i class="fas fa-crown" style="color: #ffd700; margin-right: 10px;"></i> Active Package: <span class="gradient-text">${displayTitle}</span></h3>${listHtml}`;
 
-            // Setup Dynamic Goal Limits
             if (planString.includes('Starter')) { maxReels = 5; maxPosters = 3; } 
             else if (planString.includes('Growth')) { maxReels = 8; maxPosters = 5; } 
             else if (planString.includes('Custom')) {
@@ -378,33 +373,55 @@
             document.getElementById('reelsText').innerHTML = `0 <span>/ ${maxReels}</span>`;
             document.getElementById('postersText').innerHTML = `0 <span>/ ${maxPosters}</span>`;
 
+            // === FETCH ALL MONTHS FOR DROPDOWN ===
             const snapshot = await db.collection('progress').where('clientEmail', '==', userData.email).get();
+            const monthDropdown = document.getElementById('clientMonthDropdown');
+            monthDropdown.innerHTML = '';
+
             if(!snapshot.empty) {
                 let latestDoc = null; let maxTime = 0;
+                
                 snapshot.forEach(doc => {
                     const data = doc.data();
+                    clientProgressHistory[data.month] = data; // Save to local cache
+                    
+                    // Create Dropdown Option
+                    const option = document.createElement('option');
+                    option.value = data.month;
+                    option.text = data.month;
+                    monthDropdown.appendChild(option);
+
                     const time = data.lastUpdated ? data.lastUpdated.toMillis() : 0;
                     if(time > maxTime) { maxTime = time; latestDoc = data; }
                 });
+                
                 if(!latestDoc) { latestDoc = snapshot.docs[0].data(); }
+                
+                // Select the latest month natively
+                monthDropdown.value = latestDoc.month;
                 injectDataToUI(latestDoc);
             } else {
-                document.getElementById('currentMonthDisplay').innerHTML = `<i class="fas fa-tools"></i> Preparing Dashboard...`;
+                monthDropdown.innerHTML = `<option value="">Awaiting Data...</option>`;
                 document.getElementById('tasksCompletedList').innerHTML = `<li>Awaiting first progress update from your manager.</li>`;
                 document.getElementById('tasksRemainingList').innerHTML = `<li>Strategy setup in progress.</li>`;
             }
         }
 
+        // Triggered when client clicks a different month
+        function loadSpecificMonth(monthName) {
+            if(clientProgressHistory[monthName]) {
+                injectDataToUI(clientProgressHistory[monthName]);
+            }
+        }
+
         function injectDataToUI(data) {
-            document.getElementById('currentMonthDisplay').innerHTML = `<i class="fas fa-calendar-check"></i> ${data.month}`;
-            
             const reels = data.reels || 0;
             document.getElementById('reelsText').innerHTML = `${reels} <span>/ ${maxReels}</span>`;
-            if (maxReels !== "-") setTimeout(() => { document.getElementById('reelsBar').style.width = `${Math.min((reels/maxReels)*100, 100)}%`; }, 500);
+            if (maxReels !== "-") setTimeout(() => { document.getElementById('reelsBar').style.width = `${Math.min((reels/maxReels)*100, 100)}%`; }, 50);
 
             const posters = data.posters || 0;
             document.getElementById('postersText').innerHTML = `${posters} <span>/ ${maxPosters}</span>`;
-            if (maxPosters !== "-") setTimeout(() => { document.getElementById('postersBar').style.width = `${Math.min((posters/maxPosters)*100, 100)}%`; }, 500);
+            if (maxPosters !== "-") setTimeout(() => { document.getElementById('postersBar').style.width = `${Math.min((posters/maxPosters)*100, 100)}%`; }, 50);
 
             document.getElementById('adsText').innerText = data.ads || 0;
             document.getElementById('leadsText').innerText = data.leads || 0;
