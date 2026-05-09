@@ -11,6 +11,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* Phone Input Styling for Consultation Modal */
+        .phone-input-wrapper { display: flex; align-items: center; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); border-radius: 8px; overflow: hidden; transition: 0.3s; margin-top: 5px; }
+        .phone-input-wrapper:focus-within { border-color: var(--accent-blue); box-shadow: 0 0 10px rgba(0, 210, 255, 0.15); }
+        .phone-prefix { padding: 10px 15px; color: white; background: rgba(0,0,0,0.3); border-right: 1px solid var(--glass-border); font-weight: 600; font-size: 0.9rem; }
+        .phone-input-wrapper input { border: none; background: transparent; box-shadow: none; border-radius: 0; width: 100%; padding: 10px 15px; color: white; font-family: var(--font-main); font-size: 0.9rem; outline: none; }
+        .phone-input-wrapper input:focus { box-shadow: none; border-color: transparent; }
+    </style>
 </head>
 <body>
 
@@ -251,7 +260,6 @@
                     <li><i class="fas fa-check-circle"></i> Basic Lead Generation Setup</li>
                     <li><i class="fas fa-check-circle"></i> 2 Revisions</li>
                 </ul>
-                <!-- SMART BUTTON ATTACHED HERE -->
                 <button onclick="localStorage.setItem('anvexPendingPlan', 'Starter Package - ₹4,999/mo'); window.location.href='login.html'" class="btn btn-secondary" style="width: 100%; text-align: center;">Get Started</button>
             </div>
 
@@ -273,7 +281,6 @@
                     <li><i class="fas fa-check-circle"></i> Priority Support</li>
                     <li><i class="fas fa-check-circle"></i> 3 Revisions</li>
                 </ul>
-                <!-- SMART BUTTON ATTACHED HERE -->
                 <button onclick="localStorage.setItem('anvexPendingPlan', 'Growth Package - ₹7,999/mo'); window.location.href='login.html'" class="btn btn-primary" style="width: 100%; text-align: center;">Scale Now</button>
             </div>
 
@@ -315,6 +322,16 @@
                     <label for="c_location">Business Location</label>
                     <input type="text" id="c_location" required placeholder="City or area">
                 </div>
+                
+                <!-- NEW MOBILE NUMBER FIELD ADDED HERE -->
+                <div class="input-group">
+                    <label for="c_phone">Mobile Number</label>
+                    <div class="phone-input-wrapper">
+                        <div class="phone-prefix">+91</div>
+                        <input type="tel" id="c_phone" required placeholder="10-digit number" maxlength="10">
+                    </div>
+                </div>
+
                 <div class="input-group">
                     <label for="c_time">Preferred Time (Daytime)</label>
                     <select id="c_time" required>
@@ -414,9 +431,7 @@
 
     <script src="script.js"></script>
     
-    <!-- NEW JAVASCRIPT FOR CUSTOM PRICE CALCULATION & REDIRECT -->
     <script>
-        // Updates the ₹0/mo text instantly as they check boxes
         function updateCustomPrice() {
             const checkboxes = document.querySelectorAll('.service-checkbox:checked');
             let totalPrice = 0;
@@ -426,7 +441,6 @@
             document.getElementById('calculatedPrice').innerText = totalPrice.toLocaleString('en-IN');
         }
 
-        // Packages the custom plan and sends them to the dashboard
         function submitHomepageCustomPlan() {
             const checkboxes = document.querySelectorAll('.service-checkbox:checked');
             if(checkboxes.length === 0) { alert("Please select at least one service."); return; }
@@ -443,7 +457,6 @@
             const formattedPrice = totalPrice.toLocaleString('en-IN');
             const planName = `Custom Package - ₹${formattedPrice}/mo: ` + services.join(" | ");
             
-            // Set memory and redirect!
             localStorage.setItem('anvexPendingPlan', planName);
             window.location.href = 'login.html';
         }
