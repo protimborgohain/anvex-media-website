@@ -198,6 +198,7 @@
 
             if(currYear < 2026) currYear = 2026;
 
+            let latestGeneratedMonth = "";
             for (let y = 2026; y <= currYear; y++) {
                 let endM = (y === currYear) ? currM : 11;
                 for (let m = 0; m <= endM; m++) {
@@ -206,8 +207,11 @@
                     opt.value = mStr;
                     opt.text = mStr;
                     monthSelect.insertBefore(opt, monthSelect.firstChild);
+                    latestGeneratedMonth = mStr;
                 }
             }
+            // ALWAYS DEFAULT ADMIN VIEW TO CURRENT REAL-WORLD MONTH
+            monthSelect.value = latestGeneratedMonth;
         }
 
         window.history.pushState(null, "", window.location.href);
@@ -407,15 +411,11 @@
             }
         });
 
-        // ==========================================
-        // SMART UPDATE PUSHER WITH ERROR HANDLING
-        // ==========================================
         document.getElementById('saveProgressBtn').addEventListener('click', async (e) => {
             const btn = e.currentTarget;
             const clientEmail = document.getElementById('clientSelect').value;
             const month = document.getElementById('monthSelect').value;
 
-            // 1. Strict Validation Check
             if (!clientEmail || clientEmail === "") { 
                 alert("Action Blocked: Please select an active client from the dropdown first!"); 
                 return; 
@@ -430,7 +430,6 @@
             btn.disabled = true;
 
             try {
-                // 2. Strict Numeric Conversion before pushing
                 await db.collection('progress').doc(`${clientEmail}_${month}`).set({
                     clientEmail: clientEmail,
                     month: month,
@@ -450,7 +449,6 @@
                 
             } catch (error) { 
                 console.error("Firebase Database Error: ", error); 
-                // 3. Transparent Error Message
                 alert("Update Failed! Firebase Error: " + error.message + "\n\nIf this says 'Missing or insufficient permissions', your Firebase Test Mode rules have expired. You must update your Firestore Security Rules to allow writes."); 
             } finally { 
                 btn.innerHTML = originalText; 
