@@ -178,14 +178,15 @@
         </div>
     </div>
 
+    <!-- Toast Notification -->
     <div id="toast">Update Successful!</div>
 
+    <!-- FIREBASE SCRIPTS -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // === DYNAMIC ADMIN MONTH GENERATOR ===
         const monthSelect = document.getElementById('monthSelect');
         if (monthSelect) {
             monthSelect.innerHTML = '';
@@ -193,7 +194,6 @@
             const today = new Date();
             let currYear = today.getFullYear();
             let currM = today.getMonth();
-
             if(currYear < 2026) currYear = 2026;
 
             for (let y = 2026; y <= currYear; y++) {
@@ -243,8 +243,9 @@
                 return ["5 Reels + 3 Posters", "Professional Reel Editing", "Trend Research", "Caption & Hashtag Strategy", "Instagram/Facebook Management", "Monthly Content Planning", "Basic Lead Generation Setup", "2 Revisions"];
             } else if (planString.includes("Growth")) {
                 return ["8-10 Reels + 5 Posters", "Advanced Editing & Motion Graphics", "Content Strategy & Reel Concepts", "Full Social Media Management", "Lead Generation Campaigns", "Audience Targeting Optimization", "Monthly Performance Report", "Priority Support", "3 Revisions"];
-            } else if (planString.includes("Custom Package:")) {
-                return planString.replace("Custom Package: ", "").split(" | ");
+            } else if (planString.includes("Custom Package")) {
+                let servicesPart = planString.includes(": ") ? planString.split(": ")[1] : planString;
+                return servicesPart.split(" | ");
             }
             return [planString];
         }
@@ -264,9 +265,15 @@
             }
 
             let displayDetails = details;
-            if(details.includes("Custom Package:")) {
-                let items = details.replace("Selected Plan: Custom Package: ", "").split(" | ");
-                displayDetails = "Selected Custom Plan: " + items.join(", ");
+            if(details.includes("Custom Package")) {
+                let servicesPart = details.includes(": ") ? details.split(": ")[1] : details;
+                let items = servicesPart.split(" | ");
+                
+                let pricePart = "";
+                let priceMatch = details.match(/- (₹[\d,]+\/mo)/);
+                if(priceMatch) pricePart = ` <span style="color:#25d366;">(${priceMatch[1]})</span>`;
+
+                displayDetails = `Selected Custom Plan${pricePart}: ` + items.join(", ");
             }
 
             return `
@@ -366,9 +373,20 @@
                 planBox.style.display = 'block';
                 
                 const features = getPlanFeatures(plan);
-                let displayTitle = plan.includes("Custom Package:") ? "Custom Built Package" : plan.split(' - ')[0];
+                let displayTitle = plan;
+                let displayPrice = "";
+
+                if (plan.includes("Custom Package")) {
+                    displayTitle = "Custom Built Package";
+                    let priceMatch = plan.match(/- (₹[\d,]+\/mo)/);
+                    if(priceMatch) displayPrice = ` <span style="color: #25d366; font-size: 0.9em; margin-left: 5px;">(${priceMatch[1]})</span>`;
+                } else if (plan.includes(" - ")) {
+                    let parts = plan.split(' - ');
+                    displayTitle = parts[0];
+                    if (parts[1]) displayPrice = ` <span style="color: #25d366; font-size: 0.9em; margin-left: 5px;">(${parts[1]})</span>`;
+                }
                 
-                let listHtml = `<h4 style="color: white; font-size: 1.1rem; margin-bottom: 10px;">${displayTitle}</h4><ul class="plan-features-list">`;
+                let listHtml = `<h4 style="color: white; font-size: 1.1rem; margin-bottom: 10px;">${displayTitle}${displayPrice}</h4><ul class="plan-features-list">`;
                 features.forEach(f => { listHtml += `<li><i class="fas fa-check-circle"></i> ${f}</li>`; });
                 listHtml += `</ul>`;
                 
