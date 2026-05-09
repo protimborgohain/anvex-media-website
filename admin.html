@@ -209,7 +209,6 @@
                     latestGeneratedMonth = mStr;
                 }
             }
-            // ALWAYS DEFAULT ADMIN VIEW TO CURRENT REAL-WORLD MONTH
             monthSelect.value = latestGeneratedMonth;
         }
 
@@ -273,20 +272,19 @@
             return planString;
         }
 
-        // UPGRADED BUILDCARD TO INCLUDE PHONE NUMBER
         function buildCard(id, type, name, business, location, contactInfo, phone, details) {
             const badgeClass = type === 'user' ? 'badge-user' : 'badge-inq';
             const badgeText = type === 'user' ? 'New Client Signup' : 'Form Inquiry';
             
-            // Clean phone number (strip spaces, symbols, plus sign) for WhatsApp URL formatting
-            let cleanPhone = phone ? phone.replace(/[^0-9]/g, '') : '';
+            // Extract the phone string specifically for passing to the onclick function
+            let safePhoneString = phone ? String(phone).replace(/'/g, "\\'") : '';
             
             let buttonsHtml = '';
             if (type === 'user' && details === 'Awaiting Plan Selection') {
-                buttonsHtml = `<button class="btn btn-secondary" style="padding: 10px; width: 100%; font-size: 0.8rem;" onclick="openChat('${cleanPhone}')"><i class="fab fa-whatsapp"></i> WhatsApp</button>`;
+                buttonsHtml = `<button class="btn btn-secondary" style="padding: 10px; width: 100%; font-size: 0.8rem;" onclick="openClientChat('${safePhoneString}')"><i class="fab fa-whatsapp"></i> WhatsApp</button>`;
             } else {
                 buttonsHtml = `
-                    <button class="btn btn-secondary" style="padding: 10px; width: 50%; font-size: 0.8rem;" onclick="openChat('${cleanPhone}')"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                    <button class="btn btn-secondary" style="padding: 10px; width: 50%; font-size: 0.8rem;" onclick="openClientChat('${safePhoneString}')"><i class="fab fa-whatsapp"></i> WhatsApp</button>
                     <button class="btn btn-primary" style="padding: 10px; width: 50%; font-size: 0.8rem;" onclick="acceptLead('${id}', '${type}', this)"><i class="fas fa-check"></i> Accept</button>
                 `;
             }
@@ -326,12 +324,26 @@
             </div>`;
         }
 
-        // WhatsApp Link Generator
-        function openChat(phone) {
-            if (phone && phone.length >= 10) { 
-                window.open(`https://wa.me/${phone}`, '_blank'); 
+        // ==========================================
+        // DYNAMIC WHATSAPP ROUTING
+        // ==========================================
+        function openClientChat(phoneFromDB) {
+            // Remove everything except numbers
+            let cleanNumber = phoneFromDB ? phoneFromDB.replace(/[^0-9]/g, '') : '';
+            
+            // Check if we successfully extracted a phone number
+            if (cleanNumber && cleanNumber.length >= 10) { 
+                
+                // If they only entered 10 digits (no country code), automatically add '91' for India
+                if (cleanNumber.length === 10) {
+                    cleanNumber = "91" + cleanNumber;
+                }
+                
+                // Open WhatsApp directed precisely to their number
+                window.open(`https://wa.me/${cleanNumber}`, '_blank'); 
             } else { 
-                alert("No valid phone number found for this lead."); 
+                // Alert if an older database entry is missing a phone number
+                alert("No valid phone number was found in the database for this specific client."); 
             }
         }
 
@@ -352,25 +364,21 @@
             grid.innerHTML = ''; let hasData = false;
 
             try {
-                // Fetch Consultations
                 const inqSnap = await db.collection('inquiries').get();
                 inqSnap.forEach(doc => {
                     const data = doc.data();
                     if (data.status === 'new') {
                         hasData = true;
-                        // Passing preferredTime as the extraInfo, and data.phone
                         grid.innerHTML += buildCard(doc.id, 'inquiry', data.name, data.business, data.location, data.preferredTime, data.phone, data.packageType);
                     }
                 });
 
-                // Fetch Account Signups
                 const userSnap = await db.collection('users').where('role', '==', 'client').get();
                 userSnap.forEach(doc => {
                     const data = doc.data();
                     if (data.status !== 'active') { 
                         hasData = true;
                         const requestDetails = data.selectedPlan ? `Selected Plan: ${data.selectedPlan}` : 'Awaiting Plan Selection';
-                        // Passing email as the extraInfo, and data.phone
                         grid.innerHTML += buildCard(doc.id, 'user', data.fullName, data.businessName, data.location, data.email, data.phone, requestDetails);
                     }
                 });
