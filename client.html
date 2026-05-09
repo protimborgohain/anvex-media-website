@@ -245,28 +245,32 @@
         let clientProgressHistory = {}; 
 
         // === REAL-TIME AUTH & DATABASE LISTENER ===
-        auth.onAuthStateChanged(async (user) => {
+        auth.onAuthStateChanged((user) => {
             if (!user) { window.location.replace('login.html'); return; }
 
             try {
-                // 1. Instantly process any pending plan from the homepage
-                const pendingPlan = localStorage.getItem('anvexPendingPlan');
-                if (pendingPlan) {
-                    await db.collection('users').doc(user.email).update({ selectedPlan: pendingPlan });
-                    localStorage.removeItem('anvexPendingPlan'); // Clear it so it doesn't loop
-                }
-
-                // 2. Start Real-Time Listener on this specific user's document
+                // Attach a live listener to the client's own document
                 db.collection('users').doc(user.email).onSnapshot((doc) => {
                     if (!doc.exists) { auth.signOut(); window.location.replace('login.html'); return; }
                     
-                    const userData = doc.data();
-                    
+                    let userData = doc.data();
                     if (userData.role === 'admin') { window.location.replace('admin.html'); return; }
 
                     document.getElementById('loadingScreen').style.display = 'none';
 
-                    // MAGIC: Instantly switch views based on Admin Acceptance!
+                    // === MAGIC PLAN CATCHER ===
+                    // If they just clicked a plan from the homepage, instantly apply it to the UI
+                    const pendingPlan = localStorage.getItem('anvexPendingPlan');
+                    if (pendingPlan && userData.status !== 'active') {
+                        userData.selectedPlan = pendingPlan; // Optimistically update UI instantly!
+                        
+                        // Push to Firebase silently in background so Admin sees it instantly
+                        db.collection('users').doc(user.email).update({ selectedPlan: pendingPlan })
+                            .then(() => { localStorage.removeItem('anvexPendingPlan'); })
+                            .catch(err => console.error("Update Error:", err));
+                    }
+
+                    // Instantly switch views if Admin Accepts them!
                     if (userData.status === 'active') {
                         document.getElementById('pendingScreen').style.display = 'none';
                         document.getElementById('pendingScreen').classList.remove('visible');
@@ -277,7 +281,6 @@
                         showPendingScreen(userData, user.email);
                     }
                 });
-
             } catch(e) { console.error("Auth Error: ", e); }
         });
 
@@ -297,11 +300,9 @@
             document.querySelectorAll('.clientNamePending').forEach(el => { el.innerText = userData.businessName || userData.fullName; });
 
             if (!userData.selectedPlan) {
-                // If they logged in without picking a plan, tell them to go back to the homepage
                 document.getElementById('planSelectionBox').style.display = 'block';
                 document.getElementById('underReviewBox').style.display = 'none';
             } else {
-                // They picked a plan, show the "Under Review" Box
                 document.getElementById('planSelectionBox').style.display = 'none';
                 document.getElementById('underReviewBox').style.display = 'block';
                 document.getElementById('chosenPlanDisplay').innerText = formatPlanDisplay(userData.selectedPlan);
