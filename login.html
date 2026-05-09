@@ -150,7 +150,7 @@
 
     <div class="login-wrapper fade-up visible">
         <div class="glass compact-card">
-            <img src="logo1.png" alt="Anvex Media Logo">
+            <img src="logo1.png" alt="Anvex Media Logo" id="form-logo">
             
             <div id="errorBox"></div>
             
@@ -172,7 +172,7 @@
                 </form>
 
                 <div style="margin-top: 20px;">
-                    <p style="margin: 0; font-size: 0.85rem;">Don't have an account? <span onclick="toggleForms()" style="color: var(--accent-blue); text-decoration: none; cursor: pointer; font-weight: 600;">Sign Up</span></p>
+                    <p style="margin: 0; font-size: 0.85rem;">Don't have an account? <span onclick="toggleForms('signup')" style="color: var(--accent-blue); text-decoration: none; cursor: pointer; font-weight: 600;">Sign Up</span></p>
                 </div>
             </div>
 
@@ -214,8 +214,23 @@
                 </form>
 
                 <div style="margin-top: 20px;">
-                    <p style="margin: 0; font-size: 0.85rem;">Already have an account? <span onclick="toggleForms()" style="color: var(--accent-blue); text-decoration: none; cursor: pointer; font-weight: 600;">Log In</span></p>
+                    <p style="margin: 0; font-size: 0.85rem;">Already have an account? <span onclick="toggleForms('login')" style="color: var(--accent-blue); text-decoration: none; cursor: pointer; font-weight: 600;">Log In</span></p>
                 </div>
+            </div>
+
+            <!-- VERIFY EMAIL SUCCESS SCREEN -->
+            <div id="verify-section" class="fade-switch" style="display: none; text-align: center;">
+                <i class="fas fa-envelope-open-text" style="font-size: 4rem; color: #25d366; margin-bottom: 20px;"></i>
+                <h2 style="margin-bottom: 10px;">Verify Your Email</h2>
+                <p style="line-height: 1.5;">We've successfully created your account and sent a verification link to your email address.</p>
+                
+                <div style="background: rgba(0, 210, 255, 0.1); padding: 15px; border-radius: 8px; border: 1px solid var(--accent-blue); margin-bottom: 25px;">
+                    <span id="verify-email-display" style="font-weight: 600; color: white; font-size: 1rem;"></span>
+                </div>
+                
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 25px;">Please check your inbox (and spam folder) and click the link to activate your dashboard.</p>
+                
+                <button onclick="toggleForms('login')" class="btn btn-secondary btn-compact" style="width: 100%;">Return to Login</button>
             </div>
 
         </div>
@@ -240,19 +255,10 @@
         const db = firebase.firestore();
         const errorBox = document.getElementById('errorBox');
 
-        // This flag stops the background listener from ruining our form submissions
-        let isHandlingAuth = false;
-
-        // SESSION PERSISTENCE CHECK (Only runs on page load/refresh)
+        // SESSION PERSISTENCE CHECK
+        // By ONLY reacting when the email is verified, we stop the background listener from ruining the signup flow!
         auth.onAuthStateChanged(async (user) => {
-            if (isHandlingAuth) return; // If we are actively clicking buttons, ignore this
-
-            if (user) {
-                if (!user.emailVerified) {
-                    await auth.signOut();
-                    return; 
-                }
-
+            if (user && user.emailVerified) {
                 const userDoc = await db.collection('users').doc(user.email).get();
                 if (userDoc.exists && userDoc.data().role === 'admin') {
                     window.location.href = "admin.html";
@@ -262,18 +268,27 @@
             }
         });
 
-        function toggleForms() {
+        function toggleForms(target) {
             const loginSection = document.getElementById('login-section');
             const signupSection = document.getElementById('signup-section');
+            const verifySection = document.getElementById('verify-section');
+            const logo = document.getElementById('form-logo');
+            
             errorBox.style.display = 'none'; 
             errorBox.classList.remove('success-box');
 
-            if (loginSection.style.display === 'none') {
-                loginSection.style.display = 'block';
-                signupSection.style.display = 'none';
-            } else {
-                loginSection.style.display = 'none';
+            loginSection.style.display = 'none';
+            signupSection.style.display = 'none';
+            verifySection.style.display = 'none';
+            logo.style.display = 'block';
+
+            if (target === 'signup') {
                 signupSection.style.display = 'block';
+            } else if (target === 'verify') {
+                verifySection.style.display = 'block';
+                logo.style.display = 'none'; // Hide logo to make room for big email icon
+            } else {
+                loginSection.style.display = 'block';
             }
         }
 
@@ -288,12 +303,10 @@
         }
 
         // ==========================
-        // LOGIN LOGIC
+        // LOGIN LOGIC (With Resend Link)
         // ==========================
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            isHandlingAuth = true; // Pause background listener
-            
             const email = document.getElementById('login-email').value.trim().toLowerCase();
             const password = document.getElementById('login-password').value;
             const loginBtn = document.getElementById('loginBtn');
@@ -305,8 +318,11 @@
             try {
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 
-                // CHECK IF VERIFIED
+                // If they successfully signed in but haven't verified yet:
                 if (!userCredential.user.emailVerified) {
+                    // Sign them back out safely so they can't access secure pages
+                    await auth.signOut();
+                    
                     showMessage(`
                         <i class="fas fa-exclamation-triangle"></i> Please verify your email address before logging in.<br>
                         <div style="margin-top: 10px;">
@@ -314,6 +330,7 @@
                         </div>
                     `);
 
+                    // Attach listener to the new resend button
                     document.getElementById('resendEmailBtn').addEventListener('click', async (event) => {
                         event.preventDefault();
                         const lnk = event.target;
@@ -321,18 +338,18 @@
                         lnk.style.pointerEvents = 'none'; 
                         
                         try {
-                            await userCredential.user.sendEmailVerification();
-                            showMessage('<i class="fas fa-envelope-open-text"></i> Verification email sent! Please check your inbox and spam folder.', true);
+                            // We have to temporarily log them back in just to send the email, then immediately log them out
+                            const tempAuth = await auth.signInWithEmailAndPassword(email, password);
+                            await tempAuth.user.sendEmailVerification();
                             await auth.signOut();
-                            isHandlingAuth = false;
+                            
+                            showMessage('<i class="fas fa-envelope-open-text"></i> Verification email sent! Please check your inbox and spam folder.', true);
                         } catch (err) {
                             if (err.code === 'auth/too-many-requests') {
                                 showMessage('<i class="fas fa-exclamation-triangle"></i> Too many requests. Please wait a few minutes before resending.');
                             } else {
                                 showMessage("Error: " + err.message);
                             }
-                            await auth.signOut();
-                            isHandlingAuth = false;
                         }
                     });
 
@@ -341,19 +358,12 @@
                     return; 
                 }
                 
-                // IF VERIFIED, REDIRECT MANUALLY
-                const userDoc = await db.collection('users').doc(email).get();
-                if (userDoc.exists && userDoc.data().role === 'admin') {
-                    window.location.href = "admin.html";
-                } else {
-                    window.location.href = "client.html";
-                }
-
+                // If verified, the onAuthStateChanged listener handles the redirect!
             } catch (error) {
                 if(error.code === 'auth/user-not-found') {
                     showMessage("Email not registered. Redirecting to Sign Up...");
                     setTimeout(() => {
-                        toggleForms();
+                        toggleForms('signup');
                         document.getElementById('reg-email').value = email;
                         errorBox.style.display = 'none';
                     }, 1500);
@@ -365,16 +375,14 @@
                 
                 loginBtn.innerHTML = 'Login Securely';
                 loginBtn.disabled = false;
-                isHandlingAuth = false;
             }
         });
 
         // ==========================
-        // SIGN UP LOGIC
+        // SIGN UP LOGIC (Race-Condition Free)
         // ==========================
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            isHandlingAuth = true; // Pause background listener
             
             const name = document.getElementById('reg-name').value.trim();
             const business = document.getElementById('reg-business').value.trim();
@@ -386,7 +394,6 @@
 
             if(phone.length !== 10 || isNaN(phone)) {
                 showMessage("Please enter a valid 10-digit mobile number.");
-                isHandlingAuth = false;
                 return;
             }
 
@@ -395,10 +402,10 @@
             errorBox.style.display = 'none';
 
             try {
+                // 1. Create User (They are temporarily logged in here automatically)
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                await userCredential.user.sendEmailVerification();
-
-                // Save ALL data to Firestore while technically logged in
+                
+                // 2. Save Data to Firestore (This works now because they aren't kicked out yet!)
                 await db.collection('users').doc(email).set({
                     fullName: name,
                     businessName: business,
@@ -409,14 +416,17 @@
                     joinedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // Safely sign out now that data is saved
-                await auth.signOut();
-                isHandlingAuth = false; // Turn background listener back on
+                // 3. Send Verification Email
+                await userCredential.user.sendEmailVerification();
 
-                toggleForms();
-                document.getElementById('login-email').value = email;
-                showMessage('<i class="fas fa-envelope-open-text"></i> Account created successfully!<br>We have sent a verification link to your email. Please verify your email before logging in.', true);
+                // 4. Safely Sign Out
+                await auth.signOut();
+
+                // 5. Show Beautiful Verify Screen
+                document.getElementById('verify-email-display').innerText = email;
+                toggleForms('verify');
                 
+                // Reset Button
                 signupBtn.innerHTML = 'Create Account';
                 signupBtn.disabled = false;
 
@@ -430,7 +440,6 @@
                 }
                 signupBtn.innerHTML = 'Create Account';
                 signupBtn.disabled = false;
-                isHandlingAuth = false;
             }
         });
     </script>
