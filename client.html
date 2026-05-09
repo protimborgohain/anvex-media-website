@@ -105,43 +105,27 @@
         <h1 style="font-size: 1.5rem; margin: 0; color: white; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Client <span class="gradient-text">Portal</span></h1>
     </div>
 
+    <!-- LOADING SCREEN -->
     <div id="loadingScreen" class="dashboard-container" style="text-align: center; padding-top: 15vh;">
         <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--accent-blue); margin-bottom: 20px;"></i>
         <h3>Authenticating...</h3>
     </div>
 
-    <!-- PENDING SCREEN -->
+    <!-- PENDING APPROVAL SCREEN CONTAINER -->
     <div id="pendingScreen" class="dashboard-container pending-container fade-up" style="display: none;">
+        
+        <!-- STATE 1: PLAN SELECTION -->
         <div class="glass pending-card" id="planSelectionBox" style="display: none;">
             <i class="fas fa-box-open main-icon" style="color: var(--accent-blue); animation: none;"></i>
             <h2 style="margin-bottom: 10px;">Welcome, <span class="clientNamePending gradient-text">Client</span></h2>
-            <p style="color: var(--text-muted); margin-bottom: 25px; font-size: 1.05rem;">Please choose a proper plan as per your requirement to proceed with your setup.</p>
+            <p style="color: var(--text-muted); margin-bottom: 25px; font-size: 1.05rem; line-height: 1.5;">Your account has been created successfully. To proceed with your setup, please select a package from our pricing menu.</p>
             
-            <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px;">
-                <button class="btn btn-secondary" style="width: 100%; text-align: left; padding: 15px; display: flex; justify-content: space-between; align-items: center;" onclick="savePlan('Starter Package - ₹4,999/mo', this)">
-                    <span style="font-weight: 600;">Starter</span> <span>₹4,999/mo <i class="fas fa-chevron-right" style="margin-left: 10px; font-size: 0.8rem;"></i></span>
-                </button>
-                <button class="btn btn-primary" style="width: 100%; text-align: left; padding: 15px; display: flex; justify-content: space-between; align-items: center;" onclick="savePlan('Growth Package - ₹7,999/mo', this)">
-                    <span style="font-weight: 600;">Growth (Popular)</span> <span>₹7,999/mo <i class="fas fa-chevron-right" style="margin-left: 10px; font-size: 0.8rem;"></i></span>
-                </button>
-                <button class="btn btn-secondary" style="width: 100%; text-align: left; padding: 15px; display: flex; justify-content: space-between; align-items: center; background: transparent; border: 1px solid var(--glass-border);" onclick="toggleCustomBuilder()">
-                    <span style="font-weight: 600;">Build Custom Package</span> <span><i class="fas fa-tools" style="margin-left: 10px; font-size: 0.8rem;"></i></span>
-                </button>
-            </div>
-
-            <div id="customPackageBuilder" style="display:none; text-align: left; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px solid var(--accent-blue); margin-bottom: 20px;">
-                <h4 style="color: white; margin-bottom: 15px;">Select Required Services:</h4>
-                <label style="display:block; margin-bottom:10px; color: #e2e8f0; cursor: pointer;"><input type="checkbox" value="Content Creation (4 Reels/mo)" data-price="5000" class="cp-checkbox"> Content Creation (4 Reels/mo) - ₹5,000</label>
-                <label style="display:block; margin-bottom:10px; color: #e2e8f0; cursor: pointer;"><input type="checkbox" value="Content Creation (8 Reels/mo)" data-price="9000" class="cp-checkbox"> Content Creation (8 Reels/mo) - ₹9,000</label>
-                <label style="display:block; margin-bottom:10px; color: #e2e8f0; cursor: pointer;"><input type="checkbox" value="Full Profile Management" data-price="8000" class="cp-checkbox"> Full Profile Management - ₹8,000</label>
-                <label style="display:block; margin-bottom:10px; color: #e2e8f0; cursor: pointer;"><input type="checkbox" value="Targeted Lead Gen Ads" data-price="10000" class="cp-checkbox"> Targeted Lead Gen Ads - ₹10,000</label>
-                <label style="display:block; margin-bottom:20px; color: #e2e8f0; cursor: pointer;"><input type="checkbox" value="Graphic Design (Posters)" data-price="3000" class="cp-checkbox"> Graphic Design (Posters) - ₹3,000</label>
-                <button class="btn btn-primary" style="width: 100%; padding: 12px;" onclick="saveCustomPlan(this)">Submit Custom Request</button>
-            </div>
-
-            <a href="index.html#pricing" style="color: var(--accent-blue); text-decoration: none; font-size: 0.9rem; font-weight: 600;"><i class="fas fa-external-link-alt" style="margin-right: 5px;"></i> View detailed package features</a>
+            <a href="index.html#pricing" class="btn btn-primary" style="width: 100%; display: inline-block; padding: 16px; font-size: 1.1rem; box-sizing: border-box; text-decoration: none;">
+                <i class="fas fa-list-ul" style="margin-right: 8px;"></i> View Pricing Packages
+            </a>
         </div>
 
+        <!-- STATE 2: UNDER REVIEW (Plan Selected) -->
         <div class="glass pending-card" id="underReviewBox" style="display: none;">
             <i class="fas fa-hourglass-half main-icon"></i>
             <h2 style="margin-bottom: 10px;">Welcome, <span class="clientNamePending gradient-text">Client</span></h2>
@@ -175,7 +159,6 @@
             </div>
         </div>
 
-        <!-- Dynamic Plan Overview Box -->
         <div class="plan-details-box" id="detailedPlanBox"></div>
 
         <div class="metrics-grid">
@@ -272,6 +255,16 @@
 
                 document.getElementById('loadingScreen').style.display = 'none';
 
+                // === MAGIC PLAN CATCHER ===
+                // If they came from the homepage pricing section, grab their selected plan
+                const pendingPlan = localStorage.getItem('anvexPendingPlan');
+                if (pendingPlan && userData.status !== 'active') {
+                    // Save to Firebase immediately
+                    await db.collection('users').doc(user.email).update({ selectedPlan: pendingPlan });
+                    userData.selectedPlan = pendingPlan; // Update local data to load UI correctly
+                    localStorage.removeItem('anvexPendingPlan'); // Clear it so it doesn't fire again
+                }
+
                 if (userData.status === 'active') {
                     showActiveDashboard(userData);
                 } else {
@@ -304,43 +297,6 @@
                 document.getElementById('chosenPlanDisplay').innerText = formatPlanDisplay(userData.selectedPlan);
             }
             window.currentUserEmail = email;
-        }
-
-        function toggleCustomBuilder() {
-            const builder = document.getElementById('customPackageBuilder');
-            builder.style.display = builder.style.display === 'none' ? 'block' : 'none';
-        }
-
-        async function saveCustomPlan(btnElement) {
-            const checkboxes = document.querySelectorAll('.cp-checkbox:checked');
-            if(checkboxes.length === 0) { alert("Please select at least one service."); return; }
-            let services = [];
-            let totalPrice = 0;
-            checkboxes.forEach(cb => {
-                services.push(cb.value);
-                totalPrice += parseInt(cb.getAttribute('data-price'));
-            });
-            const formattedPrice = totalPrice.toLocaleString('en-IN');
-            const planName = `Custom Package - ₹${formattedPrice}/mo: ` + services.join(" | ");
-            savePlan(planName, btnElement);
-        }
-
-        async function savePlan(planName, btnElement) {
-            const originalText = btnElement.innerHTML;
-            btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-            const allBtns = document.querySelectorAll('#planSelectionBox button');
-            allBtns.forEach(b => b.disabled = true);
-            
-            try {
-                await db.collection('users').doc(window.currentUserEmail).update({ selectedPlan: planName });
-                document.getElementById('planSelectionBox').style.display = 'none';
-                document.getElementById('underReviewBox').style.display = 'block';
-                document.getElementById('chosenPlanDisplay').innerText = formatPlanDisplay(planName);
-            } catch (error) {
-                alert("Failed to save plan. Please check your connection.");
-                btnElement.innerHTML = originalText;
-                allBtns.forEach(b => b.disabled = false);
-            }
         }
 
         function getPlanFeatures(planString) {
@@ -382,7 +338,6 @@
                 if(maxPosters === 0) maxPosters = "-";
             } else { maxReels = 8; maxPosters = 4; }
             
-            // Dynamic Calendar Initialization
             const monthDropdown = document.getElementById('clientMonthDropdown');
             monthDropdown.innerHTML = '';
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
