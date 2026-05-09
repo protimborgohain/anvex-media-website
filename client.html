@@ -85,7 +85,6 @@
         <div class="orb orb-3"></div>
     </div>
 
-    <!-- RESPONSIVE NAVBAR -->
     <nav id="navbar" class="top-nav">
         <div class="nav-left">
             <a href="index.html" class="nav-logo desktop-only"><img src="logo1.png" alt="Anvex Media Logo" style="height: 45px;"></a>
@@ -105,16 +104,13 @@
         <h1 style="font-size: 1.5rem; margin: 0; color: white; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Client <span class="gradient-text">Portal</span></h1>
     </div>
 
-    <!-- LOADING SCREEN -->
     <div id="loadingScreen" class="dashboard-container" style="text-align: center; padding-top: 15vh;">
         <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--accent-blue); margin-bottom: 20px;"></i>
         <h3>Authenticating...</h3>
     </div>
 
-    <!-- PENDING APPROVAL SCREEN CONTAINER -->
     <div id="pendingScreen" class="dashboard-container pending-container fade-up" style="display: none;">
         
-        <!-- STATE 1: NO PLAN SELECTED YET -->
         <div class="glass pending-card" id="planSelectionBox" style="display: none;">
             <i class="fas fa-box-open main-icon" style="color: var(--accent-blue); animation: none;"></i>
             <h2 style="margin-bottom: 10px;">Welcome, <span class="clientNamePending gradient-text">Client</span></h2>
@@ -125,7 +121,6 @@
             </a>
         </div>
 
-        <!-- STATE 2: UNDER REVIEW (Plan Selected) -->
         <div class="glass pending-card" id="underReviewBox" style="display: none;">
             <i class="fas fa-hourglass-half main-icon"></i>
             <h2 style="margin-bottom: 10px;">Welcome, <span class="clientNamePending gradient-text">Client</span></h2>
@@ -244,15 +239,12 @@
         let maxPosters = 0;
         let clientProgressHistory = {}; 
 
-        // === RACE-CONDITION FREE AUTH FLOW ===
         auth.onAuthStateChanged((user) => {
             if (!user) { window.location.replace('login.html'); return; }
 
-            // 1. Check if they just came from the Pricing page
             const pendingPlan = localStorage.getItem('anvexPendingPlan');
             
             if (pendingPlan) {
-                // FORCE the database to update first BEFORE starting the UI listener
                 db.collection('users').doc(user.email).update({ selectedPlan: pendingPlan })
                     .then(() => {
                         localStorage.removeItem('anvexPendingPlan');
@@ -260,15 +252,13 @@
                     })
                     .catch(err => {
                         console.error("Database sync delayed:", err);
-                        startLiveDashboardListener(user.email); // Fallback start
+                        startLiveDashboardListener(user.email); 
                     });
             } else {
-                // No pending plan, just start normally
                 startLiveDashboardListener(user.email);
             }
         });
 
-        // 2. The Live UI Listener (Runs only after DB is confirmed updated)
         function startLiveDashboardListener(email) {
             db.collection('users').doc(email).onSnapshot((doc) => {
                 if (!doc.exists) { auth.signOut(); window.location.replace('login.html'); return; }
@@ -278,7 +268,6 @@
 
                 document.getElementById('loadingScreen').style.display = 'none';
 
-                // Instantly switch views! If Admin hits accept, this triggers automatically.
                 if (userData.status === 'active') {
                     document.getElementById('pendingScreen').style.display = 'none';
                     document.getElementById('pendingScreen').classList.remove('visible');
@@ -380,28 +369,15 @@
             const snapshot = await db.collection('progress').where('clientEmail', '==', userData.email).get();
             
             if(!snapshot.empty) {
-                let latestDoc = null; let maxTime = 0;
                 snapshot.forEach(doc => {
                     const data = doc.data();
                     clientProgressHistory[data.month] = data; 
-                    const time = data.lastUpdated ? data.lastUpdated.toMillis() : 0;
-                    if(time > maxTime) { maxTime = time; latestDoc = data; }
                 });
-                
-                if (clientProgressHistory[latestGeneratedMonth]) {
-                    monthDropdown.value = latestGeneratedMonth;
-                    injectDataToUI(clientProgressHistory[latestGeneratedMonth]);
-                } else if (latestDoc) {
-                    monthDropdown.value = latestDoc.month;
-                    injectDataToUI(latestDoc);
-                } else {
-                    monthDropdown.value = latestGeneratedMonth;
-                    loadSpecificMonth(latestGeneratedMonth);
-                }
-            } else {
-                monthDropdown.value = latestGeneratedMonth;
-                loadSpecificMonth(latestGeneratedMonth);
             }
+
+            // ALWAYS Default to the actual Current Real-World Month!
+            monthDropdown.value = latestGeneratedMonth;
+            loadSpecificMonth(latestGeneratedMonth);
         }
 
         function loadSpecificMonth(monthName) {
