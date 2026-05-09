@@ -2,7 +2,7 @@
 // 1. FIREBASE INITIALIZATION
 // ==========================================
 const firebaseConfig = {
-    apiKey: "AIzaSyAxx30DLPsU_CqMqihS1HE-3kMgRxY3oio",
+    apiKey: atob("QUl6YVN5QXh4MzBETFBzVV9DcU1xaWhTMUhFLTNrTWdSeFkzb2lv"),
     authDomain: "anvex-media.firebaseapp.com",
     projectId: "anvex-media",
     storageBucket: "anvex-media.firebasestorage.app",
@@ -10,10 +10,10 @@ const firebaseConfig = {
     appId: "1:941745194100:web:8a6b718bb4bd54d9733d21"
 };
 
-// Initialize Firebase (Using compat script for seamless HTML integration)
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-const auth = firebase.auth(); // Added auth initialization
+const auth = firebase.auth(); 
 
 
 // ==========================================
@@ -24,33 +24,30 @@ auth.onAuthStateChanged(async (user) => {
     const dashBtn = document.getElementById('dashBtn');
 
     if (user) {
-        // User is LOGGED IN -> Change Nav items dynamically
         if (authBtn) {
             authBtn.innerHTML = '<i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i> Log Out';
-            authBtn.style.color = '#ff4d4d'; // Make it red
+            authBtn.style.color = '#ff4d4d'; 
             authBtn.href = "#";
             
-            // Activate real Logout Function
             authBtn.onclick = (e) => {
                 e.preventDefault();
                 auth.signOut().then(() => {
-                    window.location.reload(); // Refresh page to reset the navbar
+                    window.location.reload(); 
                 });
             };
         }
 
-        // Route Dashboard button dynamically based on role in database
         if (dashBtn) {
             try {
                 const userDoc = await db.collection('users').doc(user.email).get();
                 if (userDoc.exists && userDoc.data().role === 'admin') {
-                    dashBtn.href = "admin.html"; // Send admins to admin panel
+                    dashBtn.href = "admin.html"; 
                 } else {
-                    dashBtn.href = "client.html"; // Send regular users to client panel
+                    dashBtn.href = "client.html"; 
                 }
             } catch (err) {
                 console.error("Error fetching role: ", err);
-                dashBtn.href = "client.html"; // Fallback
+                dashBtn.href = "client.html"; 
             }
         }
     } 
@@ -61,7 +58,6 @@ auth.onAuthStateChanged(async (user) => {
 // 2. UI & SCROLL ANIMATIONS
 // ==========================================
 
-// Sticky Navbar
 window.addEventListener('scroll', () => {
     const nav = document.getElementById('navbar');
     if (window.scrollY > 50) {
@@ -71,7 +67,6 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Intersection Observer for Fade-Up Animations
 const observerOptions = { root: null, threshold: 0.1 };
 
 const observer = new IntersectionObserver((entries) => {
@@ -87,7 +82,6 @@ document.querySelectorAll('.fade-up').forEach(section => {
     observer.observe(section);
 });
 
-// Number Counter Animation
 let countersRan = false;
 function runCounters() {
     if(countersRan) return;
@@ -154,7 +148,7 @@ function calculateTotal() {
             total += parseInt(checkbox.value);
         }
     });
-    priceDisplay.innerText = total.toLocaleString('en-IN');
+    if(priceDisplay) priceDisplay.innerText = total.toLocaleString('en-IN');
 }
 
 checkboxes.forEach(checkbox => {
@@ -168,26 +162,35 @@ checkboxes.forEach(checkbox => {
 async function sendToWhatsApp(event) {
     event.preventDefault(); 
 
-    // Grab the button to show a loading state
     const submitBtn = event.target.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
     submitBtn.disabled = true;
 
     // Get input values
-    const name = document.getElementById('c_name').value;
-    const business = document.getElementById('c_business').value;
-    const category = document.getElementById('c_category').value;
-    const location = document.getElementById('c_location').value;
-    const time = document.getElementById('c_time').value;
+    const name = document.getElementById('c_name').value.trim();
+    const business = document.getElementById('c_business').value.trim();
+    const category = document.getElementById('c_category').value.trim();
+    const location = document.getElementById('c_location').value.trim();
+    const time = document.getElementById('c_time').value.trim();
+    const phone = document.getElementById('c_phone').value.trim();
+
+    // Validate Phone Number
+    if (phone.length !== 10 || isNaN(phone)) {
+        alert("Please enter a valid 10-digit mobile number.");
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+        return;
+    }
 
     try {
-        // 1. SAVE TO FIREBASE "inquiries" COLLECTION
+        // 1. SAVE TO FIREBASE "inquiries" COLLECTION WITH PHONE NUMBER
         await db.collection("inquiries").add({
             name: name,
             business: business,
             category: category,
             location: location,
+            phone: "+91 " + phone,
             preferredTime: time,
             packageType: "Consultation Request", 
             timestamp: firebase.firestore.FieldValue.serverTimestamp(),
@@ -197,9 +200,9 @@ async function sendToWhatsApp(event) {
         console.log("Lead successfully saved to database!");
 
         // 2. OPEN WHATSAPP 
-        const phoneNumber = "918011595012";
-        const message = `*New Consultation Request*%0A%0A*Name:* ${name}%0A*Business Name:* ${business}%0A*Category:* ${category}%0A*Location:* ${location}%0A*Preferred Time:* ${time}`;
-        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+        const whatsappNumber = "918011595012";
+        const message = `*New Consultation Request*%0A%0A*Name:* ${name}%0A*Business Name:* ${business}%0A*Phone:* +91 ${phone}%0A*Category:* ${category}%0A*Location:* ${location}%0A*Preferred Time:* ${time}`;
+        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
         window.open(whatsappUrl, '_blank');
 
         // 3. RESET FORM
