@@ -71,7 +71,7 @@
         }
 
         .plan-details-box { background: rgba(0,210,255,0.05); border: 1px solid var(--accent-blue); padding: 20px; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .plan-details-box h3 { color: white; margin-bottom: 15px; font-size: 1.3rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .plan-details-box h3 { color: white; margin-bottom: 15px; font-size: 1.3rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; display: flex; align-items: center; flex-wrap: wrap; }
         .plan-features-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
         .plan-features-list li { font-size: 0.95rem; color: #e2e8f0; display: flex; align-items: center; }
         .plan-features-list li i { color: #25d366; margin-right: 10px; font-size: 1.1rem; }
@@ -85,6 +85,7 @@
         <div class="orb orb-3"></div>
     </div>
 
+    <!-- RESPONSIVE NAVBAR -->
     <nav id="navbar" class="top-nav">
         <div class="nav-left">
             <a href="index.html" class="nav-logo desktop-only"><img src="logo1.png" alt="Anvex Media Logo" style="height: 45px;"></a>
@@ -104,12 +105,15 @@
         <h1 style="font-size: 1.5rem; margin: 0; color: white; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Client <span class="gradient-text">Portal</span></h1>
     </div>
 
+    <!-- LOADING SCREEN -->
     <div id="loadingScreen" class="dashboard-container" style="text-align: center; padding-top: 15vh;">
         <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--accent-blue); margin-bottom: 20px;"></i>
         <h3>Authenticating...</h3>
     </div>
 
+    <!-- PENDING APPROVAL SCREEN CONTAINER -->
     <div id="pendingScreen" class="dashboard-container pending-container fade-up" style="display: none;">
+        
         <div class="glass pending-card" id="planSelectionBox" style="display: none;">
             <i class="fas fa-box-open main-icon" style="color: var(--accent-blue); animation: none;"></i>
             <h2 style="margin-bottom: 10px;">Welcome, <span class="clientNamePending gradient-text">Client</span></h2>
@@ -129,11 +133,11 @@
 
             <div id="customPackageBuilder" style="display:none; text-align: left; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px solid var(--accent-blue); margin-bottom: 20px;">
                 <h4 style="color: white; margin-bottom: 15px;">Select Required Services:</h4>
-                <label style="display:block; margin-bottom:10px; color: #e2e8f0; cursor: pointer;"><input type="checkbox" value="Content Creation (4 Reels/mo)" class="cp-checkbox"> Content Creation (4 Reels/mo)</label>
-                <label style="display:block; margin-bottom:10px; color: #e2e8f0; cursor: pointer;"><input type="checkbox" value="Content Creation (8 Reels/mo)" class="cp-checkbox"> Content Creation (8 Reels/mo)</label>
-                <label style="display:block; margin-bottom:10px; color: #e2e8f0; cursor: pointer;"><input type="checkbox" value="Full Profile Management" class="cp-checkbox"> Full Profile Management</label>
-                <label style="display:block; margin-bottom:10px; color: #e2e8f0; cursor: pointer;"><input type="checkbox" value="Targeted Lead Gen Ads" class="cp-checkbox"> Targeted Lead Gen Ads</label>
-                <label style="display:block; margin-bottom:20px; color: #e2e8f0; cursor: pointer;"><input type="checkbox" value="Graphic Design (Posters)" class="cp-checkbox"> Graphic Design (Posters)</label>
+                <label style="display:block; margin-bottom:10px; color: #e2e8f0; cursor: pointer;"><input type="checkbox" value="Content Creation (4 Reels/mo)" data-price="5000" class="cp-checkbox"> Content Creation (4 Reels/mo) - <span style="color:var(--accent-blue);font-weight:bold;">₹5,000</span></label>
+                <label style="display:block; margin-bottom:10px; color: #e2e8f0; cursor: pointer;"><input type="checkbox" value="Content Creation (8 Reels/mo)" data-price="9000" class="cp-checkbox"> Content Creation (8 Reels/mo) - <span style="color:var(--accent-blue);font-weight:bold;">₹9,000</span></label>
+                <label style="display:block; margin-bottom:10px; color: #e2e8f0; cursor: pointer;"><input type="checkbox" value="Full Profile Management" data-price="8000" class="cp-checkbox"> Full Profile Management - <span style="color:var(--accent-blue);font-weight:bold;">₹8,000</span></label>
+                <label style="display:block; margin-bottom:10px; color: #e2e8f0; cursor: pointer;"><input type="checkbox" value="Targeted Lead Gen Ads" data-price="10000" class="cp-checkbox"> Targeted Lead Gen Ads - <span style="color:var(--accent-blue);font-weight:bold;">₹10,000</span></label>
+                <label style="display:block; margin-bottom:20px; color: #e2e8f0; cursor: pointer;"><input type="checkbox" value="Graphic Design (Posters)" data-price="3000" class="cp-checkbox"> Graphic Design (Posters) - <span style="color:var(--accent-blue);font-weight:bold;">₹3,000</span></label>
                 <button class="btn btn-primary" style="width: 100%; padding: 12px;" onclick="saveCustomPlan(this)">Submit Custom Request</button>
             </div>
 
@@ -158,6 +162,7 @@
         </div>
     </div>
 
+    <!-- MAIN ACTIVE DASHBOARD -->
     <div id="activeDashboard" class="dashboard-container fade-up" style="display: none;">
         
         <div class="dash-header">
@@ -232,6 +237,7 @@
         </div>
     </div>
 
+    <!-- FIREBASE SCRIPTS -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
@@ -287,7 +293,14 @@
             } else {
                 document.getElementById('planSelectionBox').style.display = 'none';
                 document.getElementById('underReviewBox').style.display = 'block';
-                let displayName = userData.selectedPlan.includes("Custom Package:") ? "Custom Built Package" : userData.selectedPlan;
+                
+                // Format display title for existing users gracefully
+                let displayName = userData.selectedPlan;
+                if (displayName.includes("Custom Package")) {
+                    let priceMatch = displayName.match(/- (₹[\d,]+\/mo)/);
+                    let priceStr = priceMatch ? ` (${priceMatch[1]})` : "";
+                    displayName = "Custom Built Package" + priceStr;
+                }
                 document.getElementById('chosenPlanDisplay').innerText = displayName;
             }
             window.currentUserEmail = email;
@@ -301,9 +314,16 @@
         async function saveCustomPlan(btnElement) {
             const checkboxes = document.querySelectorAll('.cp-checkbox:checked');
             if(checkboxes.length === 0) { alert("Please select at least one service."); return; }
+            
             let services = [];
-            checkboxes.forEach(cb => services.push(cb.value));
-            const planName = "Custom Package: " + services.join(" | ");
+            let totalPrice = 0;
+            checkboxes.forEach(cb => { 
+                services.push(cb.value); 
+                totalPrice += parseInt(cb.getAttribute('data-price'));
+            });
+            
+            let formattedPrice = totalPrice.toLocaleString('en-IN');
+            const planName = `Custom Package - ₹${formattedPrice}/mo: ` + services.join(" | ");
             savePlan(planName, btnElement);
         }
 
@@ -317,7 +337,13 @@
                 await db.collection('users').doc(window.currentUserEmail).update({ selectedPlan: planName });
                 document.getElementById('planSelectionBox').style.display = 'none';
                 document.getElementById('underReviewBox').style.display = 'block';
-                let displayName = planName.includes("Custom Package:") ? "Custom Built Package" : planName;
+                
+                let displayName = planName;
+                if (planName.includes("Custom Package")) {
+                    let priceMatch = planName.match(/- (₹[\d,]+\/mo)/);
+                    let priceStr = priceMatch ? ` (${priceMatch[1]})` : "";
+                    displayName = "Custom Built Package" + priceStr;
+                }
                 document.getElementById('chosenPlanDisplay').innerText = displayName;
             } catch (error) {
                 alert("Failed to save plan. Please check your connection.");
@@ -332,8 +358,9 @@
                 return ["5 Reels + 3 Posters", "Professional Reel Editing", "Trend Research", "Caption & Hashtag Strategy", "Instagram/Facebook Management", "Monthly Content Planning", "Basic Lead Generation Setup", "2 Revisions"];
             } else if (planString.includes("Growth")) {
                 return ["8-10 Reels + 5 Posters", "Advanced Editing & Motion Graphics", "Content Strategy & Reel Concepts", "Full Social Media Management", "Lead Generation Campaigns", "Audience Targeting Optimization", "Monthly Performance Report", "Priority Support", "3 Revisions"];
-            } else if (planString.includes("Custom Package:")) {
-                return planString.replace("Custom Package: ", "").split(" | ");
+            } else if (planString.includes("Custom Package")) {
+                let servicesPart = planString.includes(": ") ? planString.split(": ")[1] : planString;
+                return servicesPart.split(" | ");
             }
             return [planString];
         }
@@ -346,11 +373,31 @@
             const planString = userData.selectedPlan || 'Custom Package';
             const features = getPlanFeatures(planString);
             
-            let displayTitle = planString.includes("Custom Package:") ? "Custom Built Package" : planString.split(' - ')[0];
+            let displayTitle = planString;
+            let displayPrice = "";
+
+            // Smart Title and Price Extraction
+            if (planString.includes("Custom Package")) {
+                displayTitle = "Custom Built Package";
+                let priceMatch = planString.match(/- (₹[\d,]+\/mo)/);
+                if (priceMatch) displayPrice = ` <span style="color: #25d366; font-size: 0.9em; margin-left: 8px;">(${priceMatch[1]})</span>`;
+            } else if (planString.includes(" - ")) {
+                let parts = planString.split(' - ');
+                displayTitle = parts[0];
+                if (parts[1]) displayPrice = ` <span style="color: #25d366; font-size: 0.9em; margin-left: 8px;">(${parts[1]})</span>`;
+            }
+            
             let listHtml = `<ul class="plan-features-list">`;
             features.forEach(f => { listHtml += `<li><i class="fas fa-check-circle"></i> ${f}</li>`; });
             listHtml += `</ul>`;
-            document.getElementById('detailedPlanBox').innerHTML = `<h3><i class="fas fa-crown" style="color: #ffd700; margin-right: 10px;"></i> Active Package: <span class="gradient-text">${displayTitle}</span></h3>${listHtml}`;
+            
+            document.getElementById('detailedPlanBox').innerHTML = `
+                <h3 style="display: flex; align-items: center; flex-wrap: wrap;">
+                    <i class="fas fa-crown" style="color: #ffd700; margin-right: 10px;"></i> 
+                    Active Package: <span class="gradient-text" style="margin-left: 6px;">${displayTitle}</span> ${displayPrice}
+                </h3>
+                ${listHtml}
+            `;
 
             if (planString.includes('Starter')) { maxReels = 5; maxPosters = 3; } 
             else if (planString.includes('Growth')) { maxReels = 8; maxPosters = 5; } 
@@ -363,7 +410,6 @@
                 if(maxPosters === 0) maxPosters = "-";
             } else { maxReels = 8; maxPosters = 4; }
             
-            // === DYNAMIC MONTH GENERATOR ===
             const monthDropdown = document.getElementById('clientMonthDropdown');
             monthDropdown.innerHTML = '';
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -386,7 +432,6 @@
                 }
             }
 
-            // Load Data
             const snapshot = await db.collection('progress').where('clientEmail', '==', userData.email).get();
             
             if(!snapshot.empty) {
@@ -398,7 +443,6 @@
                     if(time > maxTime) { maxTime = time; latestDoc = data; }
                 });
                 
-                // Prioritize showing the actual current calendar month first, if it exists
                 if (clientProgressHistory[latestGeneratedMonth]) {
                     monthDropdown.value = latestGeneratedMonth;
                     injectDataToUI(clientProgressHistory[latestGeneratedMonth]);
@@ -411,16 +455,14 @@
                 }
             } else {
                 monthDropdown.value = latestGeneratedMonth;
-                loadSpecificMonth(latestGeneratedMonth); // Load empty state
+                loadSpecificMonth(latestGeneratedMonth);
             }
         }
 
-        // === SMART EMPTY STATE HANDLER ===
         function loadSpecificMonth(monthName) {
             if(clientProgressHistory[monthName]) {
                 injectDataToUI(clientProgressHistory[monthName]);
             } else {
-                // If the month hasn't been uploaded by Admin yet, show zeros and awaiting message
                 injectDataToUI({
                     month: monthName,
                     reels: 0, posters: 0, ads: 0, leads: 0,
