@@ -190,6 +190,7 @@
                     <source src="https://res.cloudinary.com/dbr2vpeqd/video/upload/c_scale,w_400,q_auto:eco,vc_auto/v1777971482/work3_gugm3e.mp4" type="video/mp4">
                 </video>
 
+                <!-- Duplicate for seamless scrolling -->
                 <video autoplay loop muted playsinline class="marquee-video" onclick="openVideoModal('https://res.cloudinary.com/dbr2vpeqd/video/upload/q_auto,vc_auto/work2_mjb4mj.mp4')">
                     <source src="https://res.cloudinary.com/dbr2vpeqd/video/upload/c_scale,w_400,q_auto:eco,vc_auto/work2_mjb4mj.mp4" type="video/mp4">
                 </video>
@@ -250,7 +251,8 @@
                     <li><i class="fas fa-check-circle"></i> Basic Lead Generation Setup</li>
                     <li><i class="fas fa-check-circle"></i> 2 Revisions</li>
                 </ul>
-                <button onclick="window.location.href='login.html'" class="btn btn-secondary" style="width: 100%; text-align: center;">Get Started</button>
+                <!-- SMART BUTTON ATTACHED HERE -->
+                <button onclick="localStorage.setItem('anvexPendingPlan', 'Starter Package - ₹4,999/mo'); window.location.href='login.html'" class="btn btn-secondary" style="width: 100%; text-align: center;">Get Started</button>
             </div>
 
             <div class="glass price-card popular">
@@ -271,7 +273,8 @@
                     <li><i class="fas fa-check-circle"></i> Priority Support</li>
                     <li><i class="fas fa-check-circle"></i> 3 Revisions</li>
                 </ul>
-                <button onclick="window.location.href='login.html'" class="btn btn-primary" style="width: 100%; text-align: center;">Scale Now</button>
+                <!-- SMART BUTTON ATTACHED HERE -->
+                <button onclick="localStorage.setItem('anvexPendingPlan', 'Growth Package - ₹7,999/mo'); window.location.href='login.html'" class="btn btn-primary" style="width: 100%; text-align: center;">Scale Now</button>
             </div>
 
             <div class="glass price-card">
@@ -326,6 +329,7 @@
         </div>
     </div>
 
+    <!-- UPGRADED CUSTOM PACKAGE MODAL WITH REAL-TIME PRICING -->
     <div id="customPackageModal" class="modal">
         <div class="modal-content glass">
             <span class="close-btn" onclick="closeModal()">&times;</span>
@@ -334,19 +338,19 @@
             
             <form id="customPackageForm" class="custom-form">
                 <label class="checkbox-container">
-                    <input type="checkbox" class="service-checkbox" value="5000"> Content Creation (4 Reels/mo)
+                    <input type="checkbox" class="service-checkbox" value="5000" onchange="updateCustomPrice()"> Content Creation (4 Reels/mo)
                 </label>
                 <label class="checkbox-container">
-                    <input type="checkbox" class="service-checkbox" value="9000"> Content Creation (8 Reels/mo)
+                    <input type="checkbox" class="service-checkbox" value="9000" onchange="updateCustomPrice()"> Content Creation (8 Reels/mo)
                 </label>
                 <label class="checkbox-container">
-                    <input type="checkbox" class="service-checkbox" value="8000"> Full Profile Management
+                    <input type="checkbox" class="service-checkbox" value="8000" onchange="updateCustomPrice()"> Full Profile Management
                 </label>
                 <label class="checkbox-container">
-                    <input type="checkbox" class="service-checkbox" value="10000"> Targeted Lead Gen Ads
+                    <input type="checkbox" class="service-checkbox" value="10000" onchange="updateCustomPrice()"> Targeted Lead Gen Ads
                 </label>
                 <label class="checkbox-container">
-                    <input type="checkbox" class="service-checkbox" value="3000"> Graphic Design (Posters)
+                    <input type="checkbox" class="service-checkbox" value="3000" onchange="updateCustomPrice()"> Graphic Design (Posters)
                 </label>
             </form>
 
@@ -354,7 +358,7 @@
                 <h3>Estimated Total: <span class="gradient-text">₹<span id="calculatedPrice">0</span>/mo</span></h3>
             </div>
             
-            <a href="#contact" class="btn btn-primary" style="margin-top: 20px; width: 100%; text-align: center; display: inline-block; box-sizing: border-box;" onclick="closeModal()">Proceed with Custom Package</a>
+            <button class="btn btn-primary" style="margin-top: 20px; width: 100%; text-align: center;" onclick="submitHomepageCustomPlan()">Proceed with Custom Package</button>
         </div>
     </div>
 
@@ -409,5 +413,40 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
 
     <script src="script.js"></script>
+    
+    <!-- NEW JAVASCRIPT FOR CUSTOM PRICE CALCULATION & REDIRECT -->
+    <script>
+        // Updates the ₹0/mo text instantly as they check boxes
+        function updateCustomPrice() {
+            const checkboxes = document.querySelectorAll('.service-checkbox:checked');
+            let totalPrice = 0;
+            checkboxes.forEach(cb => {
+                totalPrice += parseInt(cb.value);
+            });
+            document.getElementById('calculatedPrice').innerText = totalPrice.toLocaleString('en-IN');
+        }
+
+        // Packages the custom plan and sends them to the dashboard
+        function submitHomepageCustomPlan() {
+            const checkboxes = document.querySelectorAll('.service-checkbox:checked');
+            if(checkboxes.length === 0) { alert("Please select at least one service."); return; }
+            
+            let services = [];
+            let totalPrice = 0;
+            
+            checkboxes.forEach(cb => {
+                let labelText = cb.parentElement.innerText.trim();
+                services.push(labelText);
+                totalPrice += parseInt(cb.value);
+            });
+            
+            const formattedPrice = totalPrice.toLocaleString('en-IN');
+            const planName = `Custom Package - ₹${formattedPrice}/mo: ` + services.join(" | ");
+            
+            // Set memory and redirect!
+            localStorage.setItem('anvexPendingPlan', planName);
+            window.location.href = 'login.html';
+        }
+    </script>
 </body>
 </html>
