@@ -61,6 +61,7 @@
             font-size: 0.9rem;
             outline: none;
             transition: 0.3s;
+            box-sizing: border-box;
         }
 
         .compact-input-group input:focus {
@@ -94,6 +95,39 @@
             text-align: center;
             transition: 0.3s;
         }
+        
+        /* Custom Input Styling for Phone */
+        .phone-input-wrapper {
+            display: flex; 
+            align-items: center; 
+            background: rgba(255, 255, 255, 0.05); 
+            border: 1px solid var(--glass-border); 
+            border-radius: 8px; 
+            overflow: hidden;
+            transition: 0.3s;
+        }
+        .phone-input-wrapper:focus-within {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.15);
+        }
+        .phone-prefix {
+            padding: 10px 15px; 
+            color: white; 
+            background: rgba(0,0,0,0.3); 
+            border-right: 1px solid var(--glass-border); 
+            font-weight: 600;
+        }
+        .phone-input-wrapper input {
+            border: none; 
+            background: transparent; 
+            box-shadow: none; 
+            border-radius: 0;
+            width: 100%;
+        }
+        .phone-input-wrapper input:focus {
+            box-shadow: none;
+            border-color: transparent;
+        }
     </style>
 </head>
 <body>
@@ -110,7 +144,7 @@
 
     <div class="login-wrapper fade-up visible">
         <div class="glass compact-card">
-            <img src="https://lh3.googleusercontent.com/d/17XCKA0821hxjZghFPT4FEVmcvagMDqrn" alt="Anvex Media Logo">
+            <img src="logo1.png" alt="Anvex Media Logo">
             
             <div id="errorBox"></div>
             
@@ -136,36 +170,58 @@
                 </div>
             </div>
 
-            <!-- SIGN UP SECTION -->
+            <!-- SIGN UP SECTION (WITH OTP) -->
             <div id="signup-section" class="fade-switch" style="display: none;">
                 <h2>Create Account</h2>
                 <p>Join us and start dominating your local market.</p>
 
-                <form id="signupForm">
-                    <div class="compact-input-group">
-                        <label for="reg-name">Full Name</label>
-                        <input type="text" id="reg-name" placeholder="John Doe" required>
+                <!-- Note: using onsubmit="event.preventDefault();" because we handle the clicks manually for OTP -->
+                <form id="signupForm" onsubmit="event.preventDefault();">
+                    
+                    <div id="primarySignupFields">
+                        <div class="compact-input-group">
+                            <label for="reg-name">Full Name</label>
+                            <input type="text" id="reg-name" placeholder="John Doe" required>
+                        </div>
+                        <div class="compact-input-group">
+                            <label for="reg-business">Business Name</label>
+                            <input type="text" id="reg-business" placeholder="e.g. Elite Motors" required>
+                        </div>
+                        <div class="compact-input-group">
+                            <label for="reg-location">Business Location</label>
+                            <input type="text" id="reg-location" placeholder="City or area" required>
+                        </div>
+                        <div class="compact-input-group">
+                            <label for="reg-email">Email Address</label>
+                            <input type="email" id="reg-email" placeholder="hello@yourbusiness.com" required>
+                        </div>
+                        <div class="compact-input-group">
+                            <label for="reg-password">Password</label>
+                            <input type="password" id="reg-password" placeholder="Create a strong password" required>
+                        </div>
+                        <div class="compact-input-group">
+                            <label for="reg-phone">Mobile Number</label>
+                            <div class="phone-input-wrapper">
+                                <div class="phone-prefix">+91</div>
+                                <input type="tel" id="reg-phone" placeholder="10-digit number" required maxlength="10">
+                            </div>
+                        </div>
                     </div>
-                    <div class="compact-input-group">
-                        <label for="reg-business">Business Name</label>
-                        <input type="text" id="reg-business" placeholder="e.g. Elite Motors" required>
+
+                    <!-- Hidden OTP Field -->
+                    <div class="compact-input-group" id="otpGroup" style="display: none; margin-top: 15px;">
+                        <label for="reg-otp" style="color: #25d366;"><i class="fas fa-check-circle"></i> OTP Sent to Mobile</label>
+                        <input type="text" id="reg-otp" placeholder="Enter 6-digit code" maxlength="6" style="border: 1px solid #25d366;">
                     </div>
-                    <div class="compact-input-group">
-                        <label for="reg-location">Business Location</label>
-                        <input type="text" id="reg-location" placeholder="City or area" required>
-                    </div>
-                    <div class="compact-input-group">
-                        <label for="reg-email">Email Address</label>
-                        <input type="email" id="reg-email" placeholder="hello@yourbusiness.com" required>
-                    </div>
-                    <div class="compact-input-group">
-                        <label for="reg-password">Password</label>
-                        <input type="password" id="reg-password" placeholder="Create a strong password" required>
-                    </div>
-                    <button type="submit" id="signupBtn" class="btn btn-primary btn-compact" style="width: 100%; margin-top: 5px;">Create Account</button>
+
+                    <!-- Firebase invisible Recaptcha container -->
+                    <div id="recaptcha-container"></div>
+
+                    <button type="button" id="sendOtpBtn" class="btn btn-primary btn-compact" style="width: 100%; margin-top: 5px;">Send OTP to Verify</button>
+                    <button type="button" id="verifySignupBtn" class="btn btn-primary btn-compact" style="width: 100%; margin-top: 5px; display: none;">Verify & Create Account</button>
                 </form>
 
-                <div style="margin-top: 20px;">
+                <div style="margin-top: 20px;" id="loginLinkText">
                     <p style="margin: 0; font-size: 0.85rem;">Already have an account? <span onclick="toggleForms()" style="color: var(--accent-blue); text-decoration: none; cursor: pointer; font-weight: 600;">Log In</span></p>
                 </div>
             </div>
@@ -180,7 +236,7 @@
 
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyAxx30DLPsU_CqMqihS1HE-3kMgRxY3oio",
+            apiKey: atob("QUl6YVN5QXh4MzBETFBzVV9DcU1xaWhTMUhFLTNrTWdSeFkzb2lv"),
             authDomain: "anvex-media.firebaseapp.com",
             projectId: "anvex-media",
             storageBucket: "anvex-media.firebasestorage.app",
@@ -191,6 +247,8 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
         const errorBox = document.getElementById('errorBox');
+        
+        let confirmationResult = null; // Stores the OTP session
 
         // SESSION PERSISTENCE CHECK (Auto-redirect if already logged in)
         auth.onAuthStateChanged(async (user) => {
@@ -198,7 +256,7 @@
                 const userDoc = await db.collection('users').doc(user.email).get();
                 if (userDoc.exists && userDoc.data().role === 'admin') {
                     window.location.href = "admin.html";
-                } else {
+                } else if (userDoc.exists && userDoc.data().role === 'client') {
                     window.location.href = "client.html";
                 }
             }
@@ -218,7 +276,9 @@
             }
         }
 
+        // ==========================
         // LOGIN LOGIC
+        // ==========================
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value.trim().toLowerCase();
@@ -231,16 +291,15 @@
 
             try {
                 await auth.signInWithEmailAndPassword(email, password);
-                // The onAuthStateChanged function above will automatically handle the redirect now!
+                // Auto-redirect handled by onAuthStateChanged
             } catch (error) {
-                // SMART ERROR HANDLING
                 if(error.code === 'auth/user-not-found') {
                     errorBox.innerText = "Email not registered. Redirecting to Sign Up...";
                     errorBox.style.display = 'block';
                     
                     setTimeout(() => {
                         toggleForms();
-                        document.getElementById('reg-email').value = email; // Auto-fill their email
+                        document.getElementById('reg-email').value = email;
                         errorBox.style.display = 'none';
                     }, 1500);
 
@@ -257,42 +316,137 @@
             }
         });
 
-        // SIGN UP LOGIC
-        document.getElementById('signupForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('reg-name').value;
-            const business = document.getElementById('reg-business').value;
-            const location = document.getElementById('reg-location').value;
-            const email = document.getElementById('reg-email').value.trim().toLowerCase();
-            const password = document.getElementById('reg-password').value;
-            const signupBtn = document.getElementById('signupBtn');
-
-            signupBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
-            signupBtn.disabled = true;
+        // ==========================
+        // STEP 1: SEND OTP LOGIC
+        // ==========================
+        document.getElementById('sendOtpBtn').addEventListener('click', async () => {
             errorBox.style.display = 'none';
 
+            // Gather values
+            const name = document.getElementById('reg-name').value.trim();
+            const business = document.getElementById('reg-business').value.trim();
+            const location = document.getElementById('reg-location').value.trim();
+            const email = document.getElementById('reg-email').value.trim().toLowerCase();
+            const password = document.getElementById('reg-password').value;
+            const phone = document.getElementById('reg-phone').value.trim();
+
+            // Simple Form Validation
+            if(!name || !business || !location || !email || !password || !phone) {
+                errorBox.innerText = "Please fill in all details before verifying.";
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            if(phone.length !== 10 || isNaN(phone)) {
+                errorBox.innerText = "Please enter a valid 10-digit mobile number.";
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            const sendBtn = document.getElementById('sendOtpBtn');
+            sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending OTP...';
+            sendBtn.disabled = true;
+
+            const fullPhoneNumber = "+91" + phone;
+
             try {
-                await auth.createUserWithEmailAndPassword(email, password);
+                // Initialize Firebase Recaptcha (invisible)
+                if(!window.recaptchaVerifier) {
+                    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
+                }
+
+                // Send the text message
+                confirmationResult = await auth.signInWithPhoneNumber(fullPhoneNumber, window.recaptchaVerifier);
+
+                // Hide the main fields so they don't change them, reveal OTP box
+                document.getElementById('primarySignupFields').style.display = 'none';
+                document.getElementById('loginLinkText').style.display = 'none';
+                sendBtn.style.display = 'none';
+
+                document.getElementById('otpGroup').style.display = 'block';
+                document.getElementById('verifySignupBtn').style.display = 'block';
+
+            } catch (error) {
+                console.error(error);
+                errorBox.innerText = "Error sending OTP: " + error.message;
+                errorBox.style.display = 'block';
+                sendBtn.innerHTML = 'Send OTP to Verify';
+                sendBtn.disabled = false;
+                
+                // Reset recaptcha if it failed
+                if(window.recaptchaVerifier) {
+                    window.recaptchaVerifier.clear();
+                    window.recaptchaVerifier = null;
+                }
+            }
+        });
+
+        // ==========================
+        // STEP 2: VERIFY OTP & CREATE PROFILE
+        // ==========================
+        document.getElementById('verifySignupBtn').addEventListener('click', async () => {
+            errorBox.style.display = 'none';
+            const otp = document.getElementById('reg-otp').value.trim();
+
+            if(otp.length < 6) {
+                errorBox.innerText = "Please enter the 6-digit OTP code.";
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            const verifyBtn = document.getElementById('verifySignupBtn');
+            verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying & Creating...';
+            verifyBtn.disabled = true;
+
+            try {
+                // 1. Check if OTP is correct (This signs them into Firebase via Phone)
+                const result = await confirmationResult.confirm(otp);
+                const user = result.user;
+
+                // 2. Link their Email and Password to this verified phone account
+                const email = document.getElementById('reg-email').value.trim().toLowerCase();
+                const password = document.getElementById('reg-password').value;
+                const credential = firebase.auth.EmailAuthProvider.credential(email, password);
+
+                try {
+                    await user.linkWithCredential(credential);
+                } catch (linkError) {
+                    if (linkError.code === 'auth/email-already-in-use' || linkError.code === 'auth/credential-already-in-use') {
+                        throw new Error("This email is already registered. Please log in instead.");
+                    } else {
+                        throw linkError; // Throw other unexpected errors
+                    }
+                }
+
+                // 3. Gather final data
+                const name = document.getElementById('reg-name').value.trim();
+                const business = document.getElementById('reg-business').value.trim();
+                const location = document.getElementById('reg-location').value.trim();
+                const fullPhoneNumber = "+91" + document.getElementById('reg-phone').value.trim();
+
+                // 4. Write full profile (including verified phone) to database
                 await db.collection('users').doc(email).set({
                     fullName: name,
                     businessName: business,
                     location: location,
                     email: email,
+                    phone: fullPhoneNumber,
                     role: "client", 
                     joinedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                // Auto-redirect handled by onAuthStateChanged
+
+                // Success! `onAuthStateChanged` will automatically redirect them to `client.html`
+
             } catch (error) {
-                if(error.code === 'auth/email-already-in-use') {
-                    errorBox.innerText = "An account with this email already exists.";
-                } else if(error.code === 'auth/weak-password') {
-                    errorBox.innerText = "Password must be at least 6 characters long.";
+                console.error(error);
+                if (error.code === 'auth/invalid-verification-code') {
+                    errorBox.innerText = "Incorrect OTP code. Please try again.";
                 } else {
                     errorBox.innerText = error.message;
                 }
                 errorBox.style.display = 'block';
-                signupBtn.innerHTML = 'Create Account';
-                signupBtn.disabled = false;
+                verifyBtn.innerHTML = 'Verify & Create Account';
+                verifyBtn.disabled = false;
             }
         });
     </script>
