@@ -97,14 +97,12 @@
             line-height: 1.4;
         }
 
-        /* Added success styling for the email verification message */
         .success-box {
             color: #25d366 !important;
             background: rgba(37, 211, 102, 0.1) !important;
             border-color: rgba(37, 211, 102, 0.3) !important;
         }
         
-        /* Custom Input Styling for Phone */
         .phone-input-wrapper {
             display: flex; 
             align-items: center; 
@@ -245,9 +243,10 @@
         // SESSION PERSISTENCE CHECK
         auth.onAuthStateChanged(async (user) => {
             if (user) {
-                // IMPORTANT: Only redirect if they have verified their email!
+                // If they refresh the page and aren't verified, kill the ghost session
                 if (!user.emailVerified) {
-                    return; // Stop here, don't redirect yet
+                    await auth.signOut();
+                    return; 
                 }
 
                 const userDoc = await db.collection('users').doc(user.email).get();
@@ -263,7 +262,7 @@
             const loginSection = document.getElementById('login-section');
             const signupSection = document.getElementById('signup-section');
             errorBox.style.display = 'none'; 
-            errorBox.classList.remove('success-box'); // Reset styling
+            errorBox.classList.remove('success-box');
 
             if (loginSection.style.display === 'none') {
                 loginSection.style.display = 'block';
@@ -285,7 +284,7 @@
         }
 
         // ==========================
-        // LOGIN LOGIC (With Email Verification Check)
+        // LOGIN LOGIC (With Resend Verification Link)
         // ==========================
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -302,14 +301,43 @@
                 
                 // CHECK IF VERIFIED
                 if (!userCredential.user.emailVerified) {
-                    await auth.signOut(); // Immediately sign them back out
-                    showMessage('<i class="fas fa-exclamation-triangle"></i> Please verify your email address before logging in. Check your inbox for the verification link.');
+                    
+                    // Show error with embedded Resend button
+                    showMessage(`
+                        <i class="fas fa-exclamation-triangle"></i> Please verify your email address before logging in.<br>
+                        <div style="margin-top: 10px;">
+                            <a href="#" id="resendEmailBtn" style="color: var(--accent-blue); font-weight: bold; text-decoration: none; border-bottom: 1px dashed var(--accent-blue);">Resend Verification Email</a>
+                        </div>
+                    `);
+
+                    // Attach listener to the new resend button
+                    document.getElementById('resendEmailBtn').addEventListener('click', async (event) => {
+                        event.preventDefault();
+                        const lnk = event.target;
+                        lnk.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+                        lnk.style.pointerEvents = 'none'; // Prevent double clicks
+                        
+                        try {
+                            // Because they just logged in, we can send the email, then immediately log them out securely
+                            await userCredential.user.sendEmailVerification();
+                            showMessage('<i class="fas fa-envelope-open-text"></i> Verification email sent! Please check your inbox and spam folder.', true);
+                            await auth.signOut();
+                        } catch (err) {
+                            if (err.code === 'auth/too-many-requests') {
+                                showMessage('<i class="fas fa-exclamation-triangle"></i> Too many requests. Please wait a few minutes before resending.');
+                            } else {
+                                showMessage("Error: " + err.message);
+                            }
+                            await auth.signOut();
+                        }
+                    });
+
                     loginBtn.innerHTML = 'Login Securely';
                     loginBtn.disabled = false;
-                    return;
+                    return; // Stop the code here
                 }
                 
-                // If verified, onAuthStateChanged handles the redirect!
+                // If verified, onAuthStateChanged handles the redirect automatically!
             } catch (error) {
                 if(error.code === 'auth/user-not-found') {
                     showMessage("Email not registered. Redirecting to Sign Up...");
@@ -330,7 +358,7 @@
         });
 
         // ==========================
-        // SIGN UP LOGIC (Sends Verification Email)
+        // SIGN UP LOGIC
         // ==========================
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
