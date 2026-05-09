@@ -240,10 +240,14 @@
         const db = firebase.firestore();
         const errorBox = document.getElementById('errorBox');
 
-        // SESSION PERSISTENCE CHECK
+        // This flag stops the background listener from ruining our form submissions
+        let isHandlingAuth = false;
+
+        // SESSION PERSISTENCE CHECK (Only runs on page load/refresh)
         auth.onAuthStateChanged(async (user) => {
+            if (isHandlingAuth) return; // If we are actively clicking buttons, ignore this
+
             if (user) {
-                // If they refresh the page and aren't verified, kill the ghost session
                 if (!user.emailVerified) {
                     await auth.signOut();
                     return; 
@@ -284,10 +288,12 @@
         }
 
         // ==========================
-        // LOGIN LOGIC (With Resend Verification Link)
+        // LOGIN LOGIC
         // ==========================
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            isHandlingAuth = true; // Pause background listener
+            
             const email = document.getElementById('login-email').value.trim().toLowerCase();
             const password = document.getElementById('login-password').value;
             const loginBtn = document.getElementById('loginBtn');
@@ -301,8 +307,6 @@
                 
                 // CHECK IF VERIFIED
                 if (!userCredential.user.emailVerified) {
-                    
-                    // Show error with embedded Resend button
                     showMessage(`
                         <i class="fas fa-exclamation-triangle"></i> Please verify your email address before logging in.<br>
                         <div style="margin-top: 10px;">
@@ -310,18 +314,17 @@
                         </div>
                     `);
 
-                    // Attach listener to the new resend button
                     document.getElementById('resendEmailBtn').addEventListener('click', async (event) => {
                         event.preventDefault();
                         const lnk = event.target;
                         lnk.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-                        lnk.style.pointerEvents = 'none'; // Prevent double clicks
+                        lnk.style.pointerEvents = 'none'; 
                         
                         try {
-                            // Because they just logged in, we can send the email, then immediately log them out securely
                             await userCredential.user.sendEmailVerification();
                             showMessage('<i class="fas fa-envelope-open-text"></i> Verification email sent! Please check your inbox and spam folder.', true);
                             await auth.signOut();
+                            isHandlingAuth = false;
                         } catch (err) {
                             if (err.code === 'auth/too-many-requests') {
                                 showMessage('<i class="fas fa-exclamation-triangle"></i> Too many requests. Please wait a few minutes before resending.');
@@ -329,15 +332,23 @@
                                 showMessage("Error: " + err.message);
                             }
                             await auth.signOut();
+                            isHandlingAuth = false;
                         }
                     });
 
                     loginBtn.innerHTML = 'Login Securely';
                     loginBtn.disabled = false;
-                    return; // Stop the code here
+                    return; 
                 }
                 
-                // If verified, onAuthStateChanged handles the redirect automatically!
+                // IF VERIFIED, REDIRECT MANUALLY
+                const userDoc = await db.collection('users').doc(email).get();
+                if (userDoc.exists && userDoc.data().role === 'admin') {
+                    window.location.href = "admin.html";
+                } else {
+                    window.location.href = "client.html";
+                }
+
             } catch (error) {
                 if(error.code === 'auth/user-not-found') {
                     showMessage("Email not registered. Redirecting to Sign Up...");
@@ -354,6 +365,7 @@
                 
                 loginBtn.innerHTML = 'Login Securely';
                 loginBtn.disabled = false;
+                isHandlingAuth = false;
             }
         });
 
@@ -362,6 +374,7 @@
         // ==========================
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            isHandlingAuth = true; // Pause background listener
             
             const name = document.getElementById('reg-name').value.trim();
             const business = document.getElementById('reg-business').value.trim();
@@ -373,6 +386,7 @@
 
             if(phone.length !== 10 || isNaN(phone)) {
                 showMessage("Please enter a valid 10-digit mobile number.");
+                isHandlingAuth = false;
                 return;
             }
 
@@ -381,13 +395,10 @@
             errorBox.style.display = 'none';
 
             try {
-                // 1. Create the Auth user
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                
-                // 2. Send the verification email instantly
                 await userCredential.user.sendEmailVerification();
 
-                // 3. Save ALL data to Firestore
+                // Save ALL data to Firestore while technically logged in
                 await db.collection('users').doc(email).set({
                     fullName: name,
                     businessName: business,
@@ -398,10 +409,10 @@
                     joinedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // 4. Force Sign Out so they have to verify first
+                // Safely sign out now that data is saved
                 await auth.signOut();
+                isHandlingAuth = false; // Turn background listener back on
 
-                // 5. Show Success Message and switch to Login tab
                 toggleForms();
                 document.getElementById('login-email').value = email;
                 showMessage('<i class="fas fa-envelope-open-text"></i> Account created successfully!<br>We have sent a verification link to your email. Please verify your email before logging in.', true);
@@ -419,6 +430,7 @@
                 }
                 signupBtn.innerHTML = 'Create Account';
                 signupBtn.disabled = false;
+                isHandlingAuth = false;
             }
         });
     </script>
