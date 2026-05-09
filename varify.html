@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifying Email... | Anvex Media</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .verify-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px; 
+            text-align: center;
+        }
+        
+        .compact-card {
+            width: 100%;
+            max-width: 450px; 
+            padding: 3rem 2rem !important; 
+            border-radius: 20px;
+        }
+
+        .compact-card img {
+            height: 45px; 
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="futuristic-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="verify-wrapper fade-up visible">
+        <div class="glass compact-card">
+            <img src="logo1.png" alt="Anvex Media Logo">
+            
+            <!-- Dynamic Content Area -->
+            <div id="status-container">
+                <i class="fas fa-circle-notch fa-spin" style="font-size: 4rem; color: var(--accent-blue); margin-bottom: 20px;"></i>
+                <h2 style="margin-bottom: 10px;">Verifying your email...</h2>
+                <p style="color: var(--text-muted);">Please wait a moment while we securely process your request.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- FIREBASE SCRIPTS -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: atob("QUl6YVN5QXh4MzBETFBzVV9DcU1xaWhTMUhFLTNrTWdSeFkzb2lv"),
+            authDomain: "anvex-media.firebaseapp.com",
+            projectId: "anvex-media",
+            storageBucket: "anvex-media.firebasestorage.app",
+            messagingSenderId: "941745194100",
+            appId: "1:941745194100:web:8a6b718bb4bd54d9733d21"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Extract the special code from the URL that Firebase sent
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const mode = urlParams.get('mode');
+            const actionCode = urlParams.get('oobCode');
+            const statusContainer = document.getElementById('status-container');
+
+            if (mode === 'verifyEmail' && actionCode) {
+                // Apply the code to verify the user
+                auth.applyActionCode(actionCode).then(() => {
+                    // Success UI
+                    statusContainer.innerHTML = `
+                        <i class="fas fa-check-circle" style="font-size: 4rem; color: #25d366; margin-bottom: 20px;"></i>
+                        <h2 style="margin-bottom: 10px; color: #25d366;">Email Verified!</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 25px;">Your account is now active and secure.</p>
+                        <a href="login.html" class="btn btn-primary" style="width: 100%; display: inline-block; padding: 12px; box-sizing: border-box; text-decoration: none;">Continue to Login</a>
+                    `;
+                }).catch((error) => {
+                    // Error UI (e.g., link expired or already used)
+                    let errorMsg = "The verification link is invalid or has expired.";
+                    if (error.code === 'auth/invalid-action-code') {
+                        errorMsg = "This link has already been used. Your email might already be verified!";
+                    }
+
+                    statusContainer.innerHTML = `
+                        <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: #ff4d4d; margin-bottom: 20px;"></i>
+                        <h2 style="margin-bottom: 10px; color: #ff4d4d;">Verification Failed</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 25px; line-height: 1.5;">${errorMsg}</p>
+                        <a href="login.html" class="btn btn-secondary" style="width: 100%; display: inline-block; padding: 12px; box-sizing: border-box; text-decoration: none;">Go to Login</a>
+                    `;
+                });
+            } else {
+                // Someone navigated here directly without an email link
+                statusContainer.innerHTML = `
+                    <i class="fas fa-question-circle" style="font-size: 4rem; color: var(--text-muted); margin-bottom: 20px;"></i>
+                    <h2 style="margin-bottom: 10px;">No Verification Code</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 25px;">Please click the link directly from your email inbox.</p>
+                    <a href="index.html" class="btn btn-secondary" style="width: 100%; display: inline-block; padding: 12px; box-sizing: border-box; text-decoration: none;">Return Home</a>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
