@@ -19,6 +19,12 @@
         .phone-prefix { padding: 10px 15px; color: white; background: rgba(0,0,0,0.3); border-right: 1px solid var(--glass-border); font-weight: 600; font-size: 0.9rem; }
         .phone-input-wrapper input { border: none; background: transparent; box-shadow: none; border-radius: 0; width: 100%; padding: 10px 15px; color: white; font-family: var(--font-main); font-size: 0.9rem; outline: none; }
         .phone-input-wrapper input:focus { box-shadow: none; border-color: transparent; }
+        
+        /* Custom Package Input Styling */
+        .custom-item-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .custom-item-label { color: white; font-weight: 500; font-size: 0.95rem; }
+        .custom-number-input { width: 65px; padding: 8px; border-radius: 6px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: white; text-align: center; outline: none; font-family: var(--font-main); font-weight: 600; transition: 0.3s; }
+        .custom-number-input:focus { border-color: var(--accent-blue); box-shadow: 0 0 8px rgba(0, 210, 255, 0.2); }
     </style>
 </head>
 <body>
@@ -323,7 +329,6 @@
                     <input type="text" id="c_location" required placeholder="City or area">
                 </div>
                 
-                <!-- NEW MOBILE NUMBER FIELD ADDED HERE -->
                 <div class="input-group">
                     <label for="c_phone">Mobile Number</label>
                     <div class="phone-input-wrapper">
@@ -351,28 +356,41 @@
         <div class="modal-content glass">
             <span class="close-btn" onclick="closeModal()">&times;</span>
             <h2 style="margin-bottom: 5px;">Build Your <span class="gradient-text">Package</span></h2>
-            <p>Select the services you need.</p>
+            <p style="margin-bottom: 20px;">Select exactly the services you need.</p>
             
             <form id="customPackageForm" class="custom-form">
+                
+                <!-- Number Inputs -->
+                <div class="custom-item-row">
+                    <label class="custom-item-label" for="custom_reels">Content Creation (Reels)</label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">₹600/each</span>
+                        <input type="number" id="custom_reels" min="0" value="0" class="custom-number-input" oninput="updateCustomPrice()">
+                    </div>
+                </div>
+                
+                <div class="custom-item-row">
+                    <label class="custom-item-label" for="custom_posters">Graphic Design (Posters)</label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">₹100/each</span>
+                        <input type="number" id="custom_posters" min="0" value="0" class="custom-number-input" oninput="updateCustomPrice()">
+                    </div>
+                </div>
+
+                <!-- Checkbox Inputs -->
                 <label class="checkbox-container">
-                    <input type="checkbox" class="service-checkbox" value="5000" onchange="updateCustomPrice()"> Content Creation (4 Reels/mo)
+                    <input type="checkbox" class="service-checkbox" value="1999" data-name="Full Profile Management" onchange="updateCustomPrice()"> Full Profile Management (₹1,999)
                 </label>
                 <label class="checkbox-container">
-                    <input type="checkbox" class="service-checkbox" value="9000" onchange="updateCustomPrice()"> Content Creation (8 Reels/mo)
+                    <input type="checkbox" class="service-checkbox" value="999" data-name="Targeted Lead Gen Ads" onchange="updateCustomPrice()"> Targeted Lead Gen Ads (₹999)
                 </label>
-                <label class="checkbox-container">
-                    <input type="checkbox" class="service-checkbox" value="8000" onchange="updateCustomPrice()"> Full Profile Management
-                </label>
-                <label class="checkbox-container">
-                    <input type="checkbox" class="service-checkbox" value="10000" onchange="updateCustomPrice()"> Targeted Lead Gen Ads
-                </label>
-                <label class="checkbox-container">
-                    <input type="checkbox" class="service-checkbox" value="3000" onchange="updateCustomPrice()"> Graphic Design (Posters)
+                <label class="checkbox-container" style="margin-top: 5px;">
+                    <input type="checkbox" class="service-checkbox" value="9999" data-name="Static Website Design" onchange="updateCustomPrice()"> Static Website Design (₹9,999)
                 </label>
             </form>
 
             <div class="total-price-display">
-                <h3>Estimated Total: <span class="gradient-text">₹<span id="calculatedPrice">0</span>/mo</span></h3>
+                <h3>Estimated Total: <span class="gradient-text">₹<span id="calculatedPrice">0</span></span></h3>
             </div>
             
             <button class="btn btn-primary" style="margin-top: 20px; width: 100%; text-align: center;" onclick="submitHomepageCustomPlan()">Proceed with Custom Package</button>
@@ -433,29 +451,57 @@
     
     <script>
         function updateCustomPrice() {
-            const checkboxes = document.querySelectorAll('.service-checkbox:checked');
             let totalPrice = 0;
+            
+            // Add values from checkboxes
+            const checkboxes = document.querySelectorAll('.service-checkbox:checked');
             checkboxes.forEach(cb => {
                 totalPrice += parseInt(cb.value);
             });
+            
+            // Add values from number inputs
+            const reelsCount = parseInt(document.getElementById('custom_reels').value) || 0;
+            const postersCount = parseInt(document.getElementById('custom_posters').value) || 0;
+            
+            totalPrice += (reelsCount * 600);
+            totalPrice += (postersCount * 100);
+            
             document.getElementById('calculatedPrice').innerText = totalPrice.toLocaleString('en-IN');
         }
 
         function submitHomepageCustomPlan() {
-            const checkboxes = document.querySelectorAll('.service-checkbox:checked');
-            if(checkboxes.length === 0) { alert("Please select at least one service."); return; }
-            
             let services = [];
             let totalPrice = 0;
             
+            // Gather Reel/Poster Data
+            const reelsCount = parseInt(document.getElementById('custom_reels').value) || 0;
+            const postersCount = parseInt(document.getElementById('custom_posters').value) || 0;
+            
+            if (reelsCount > 0) {
+                services.push(`${reelsCount} Reels`);
+                totalPrice += (reelsCount * 600);
+            }
+            if (postersCount > 0) {
+                services.push(`${postersCount} Posters`);
+                totalPrice += (postersCount * 100);
+            }
+            
+            // Gather Checkbox Data
+            const checkboxes = document.querySelectorAll('.service-checkbox:checked');
             checkboxes.forEach(cb => {
-                let labelText = cb.parentElement.innerText.trim();
-                services.push(labelText);
+                services.push(cb.getAttribute('data-name'));
                 totalPrice += parseInt(cb.value);
             });
             
+            if(services.length === 0) { 
+                alert("Please add at least one service to create your package."); 
+                return; 
+            }
+            
             const formattedPrice = totalPrice.toLocaleString('en-IN');
-            const planName = `Custom Package - ₹${formattedPrice}/mo: ` + services.join(" | ");
+            
+            // Format the string for the database
+            const planName = `Custom Package - ₹${formattedPrice}: ` + services.join(" | ");
             
             localStorage.setItem('anvexPendingPlan', planName);
             window.location.href = 'login.html';
