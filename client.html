@@ -244,45 +244,52 @@
         let maxPosters = 0;
         let clientProgressHistory = {}; 
 
-        // === REAL-TIME AUTH & DATABASE LISTENER ===
+        // === RACE-CONDITION FREE AUTH FLOW ===
         auth.onAuthStateChanged((user) => {
             if (!user) { window.location.replace('login.html'); return; }
 
-            try {
-                // Attach a live listener to the client's own document
-                db.collection('users').doc(user.email).onSnapshot((doc) => {
-                    if (!doc.exists) { auth.signOut(); window.location.replace('login.html'); return; }
-                    
-                    let userData = doc.data();
-                    if (userData.role === 'admin') { window.location.replace('admin.html'); return; }
-
-                    document.getElementById('loadingScreen').style.display = 'none';
-
-                    // === MAGIC PLAN CATCHER ===
-                    // If they just clicked a plan from the homepage, instantly apply it to the UI
-                    const pendingPlan = localStorage.getItem('anvexPendingPlan');
-                    if (pendingPlan && userData.status !== 'active') {
-                        userData.selectedPlan = pendingPlan; // Optimistically update UI instantly!
-                        
-                        // Push to Firebase silently in background so Admin sees it instantly
-                        db.collection('users').doc(user.email).update({ selectedPlan: pendingPlan })
-                            .then(() => { localStorage.removeItem('anvexPendingPlan'); })
-                            .catch(err => console.error("Update Error:", err));
-                    }
-
-                    // Instantly switch views if Admin Accepts them!
-                    if (userData.status === 'active') {
-                        document.getElementById('pendingScreen').style.display = 'none';
-                        document.getElementById('pendingScreen').classList.remove('visible');
-                        showActiveDashboard(userData);
-                    } else {
-                        document.getElementById('activeDashboard').style.display = 'none';
-                        document.getElementById('activeDashboard').classList.remove('visible');
-                        showPendingScreen(userData, user.email);
-                    }
-                });
-            } catch(e) { console.error("Auth Error: ", e); }
+            // 1. Check if they just came from the Pricing page
+            const pendingPlan = localStorage.getItem('anvexPendingPlan');
+            
+            if (pendingPlan) {
+                // FORCE the database to update first BEFORE starting the UI listener
+                db.collection('users').doc(user.email).update({ selectedPlan: pendingPlan })
+                    .then(() => {
+                        localStorage.removeItem('anvexPendingPlan');
+                        startLiveDashboardListener(user.email); 
+                    })
+                    .catch(err => {
+                        console.error("Database sync delayed:", err);
+                        startLiveDashboardListener(user.email); // Fallback start
+                    });
+            } else {
+                // No pending plan, just start normally
+                startLiveDashboardListener(user.email);
+            }
         });
+
+        // 2. The Live UI Listener (Runs only after DB is confirmed updated)
+        function startLiveDashboardListener(email) {
+            db.collection('users').doc(email).onSnapshot((doc) => {
+                if (!doc.exists) { auth.signOut(); window.location.replace('login.html'); return; }
+                
+                let userData = doc.data();
+                if (userData.role === 'admin') { window.location.replace('admin.html'); return; }
+
+                document.getElementById('loadingScreen').style.display = 'none';
+
+                // Instantly switch views! If Admin hits accept, this triggers automatically.
+                if (userData.status === 'active') {
+                    document.getElementById('pendingScreen').style.display = 'none';
+                    document.getElementById('pendingScreen').classList.remove('visible');
+                    showActiveDashboard(userData);
+                } else {
+                    document.getElementById('activeDashboard').style.display = 'none';
+                    document.getElementById('activeDashboard').classList.remove('visible');
+                    showPendingScreen(userData);
+                }
+            });
+        }
 
         function formatPlanDisplay(planString) {
             if (!planString) return "Awaiting Setup";
@@ -293,7 +300,7 @@
             return planString;
         }
 
-        function showPendingScreen(userData, email) {
+        function showPendingScreen(userData) {
             document.getElementById('pendingScreen').style.display = 'flex';
             setTimeout(() => document.getElementById('pendingScreen').classList.add('visible'), 50);
             
